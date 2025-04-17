@@ -1,8 +1,14 @@
 {
-  "addTopBarIcon": "Mouse Events Plugin Enabled",
-  "pluginName": "Mouse Events Plugin",
-  "scrollToTopSuccess": "Scrolled to top",
-  "locateDocSuccess": "Located current document",
-  "locateDocFailed": "Could not find current document in tree",
-  "pluginEnabled": "Mouse Events Plugin Enabled"
+  "pluginOnload": "Mouse Events Plugin Loaded",
+  "pluginOnunload": "Mouse Events Plugin Unloaded",
+  "scrollToTop": "Scrolled to Top",
+  "scrollToBottom": "Scrolled to Bottom",
+  "uptooltipText": "Jump to Top",
+  "downtooltipText": "Jump to Bottom",
+  "lefttooltipText": "Switch to Left Tab",
+  "righttooltipText": "Switch to Right Tab",
+  "locateCurrentDocInTreeErr1": "Failed to Get Current Document ID",
+  "locateCurrentDocInTreeErr2": "Current Document Not Found in Document Tree",
+  "switchTabLeft": "Already the Leftmost Tab",
+  "switchTabRight": "Already the Rightmost Tab"
 }

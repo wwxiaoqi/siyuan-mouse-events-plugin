@@ -24,12 +24,12 @@ export default class MouseEventsPlugin extends Plugin {
     private gestureDirection: string = '';
 
     onload() {
-        console.log("Mouse Events Plugin loaded");
+        console.log(this.i18n.pluginOnload);
         this.registerMouseEvents();
     }
 
     onunload() {
-        console.log("Mouse Events Plugin unloaded");
+        console.log(this.i18n.pluginOnunload);
         this.unregisterMouseEvents();
     }
 
@@ -131,21 +131,16 @@ export default class MouseEventsPlugin extends Plugin {
 
         // 中键点击
         if (event.button === 1) {
-            console.log("中键点击");
 
-            // 检查文档树是否打开
-            // const fileTree = document.querySelector('.layout__fileTree');
+            // 检查文档是否打开
             const element = document.querySelector(".layout__wnd--active > .fn__flex > .layout-tab-bar > .item--focus") ||
             document.querySelector("ul.layout-tab-bar > .item--focus");
-            console.log(element);
 
             if (element) {
-                console.log("检查文档树是否打开");
                 // 获取当前打开的文档ID
                 const currentDocId = this.getCurrentDocId();
                 console.log(currentDocId);
                 if (currentDocId) {
-                    console.log("获取当前打开的文档ID");
                     // 定位到文档树中的当前文档
                     this.locateCurrentDocInTree(currentDocId);
                     event.preventDefault();
@@ -162,7 +157,7 @@ export default class MouseEventsPlugin extends Plugin {
                 top: 0,
                 behavior: 'smooth'
             });
-            showMessage("已滚动到顶部");
+            showMessage(this.i18n.scrollToTop);
         }
     }
     
@@ -228,6 +223,7 @@ export default class MouseEventsPlugin extends Plugin {
     
     // 创建提示窗口
     private createTooltipElement() {
+
         // 移除可能存在的旧元素
         this.removeTooltipElement();
         
@@ -260,16 +256,16 @@ export default class MouseEventsPlugin extends Plugin {
 
             switch (this.gestureDirection) {
                 case 'up':
-                    tooltipText = '跳转至顶部';
+                    tooltipText = this.i18n.uptooltipText;
                     break;
                 case 'down':
-                    tooltipText = '跳转至底部';
+                    tooltipText = this.i18n.downtooltipText;
                     break;
                 case 'left':
-                    tooltipText = '切换至左侧页签';
+                    tooltipText = this.i18n.lefttooltipText;
                     break;
                 case 'right':
-                    tooltipText = '切换至右侧页签';
+                    tooltipText = this.i18n.righttooltipText;
                     break;
             }
             this.tooltipElement.textContent = tooltipText;
@@ -357,7 +353,7 @@ export default class MouseEventsPlugin extends Plugin {
                 top: editor.scrollHeight,
                 behavior: 'smooth'
             });
-            showMessage("已滚动到底部");
+            showMessage(this.i18n.scrollToBottom);
         }
     }
 
@@ -372,7 +368,7 @@ export default class MouseEventsPlugin extends Plugin {
 
     private locateCurrentDocInTree(docId: string | null) {
         if (!docId) {
-            showMessage("无法获取当前文档ID");
+            showMessage(this.i18n.locateCurrentDocInTreeErr1);
             return;
         }
         // 在文档树中定位并高亮当前文档
@@ -394,9 +390,8 @@ export default class MouseEventsPlugin extends Plugin {
             // 滚动到视图中并高亮
             docItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
             (docItem as HTMLElement).click();
-            showMessage("已定位到当前文档");
         } else {
-            showMessage("无法在文档树中找到当前文档");
+            showMessage(this.i18n.locateCurrentDocInTreeErr2);
         }
     }
 
@@ -407,9 +402,8 @@ export default class MouseEventsPlugin extends Plugin {
             const prevTab = activeTab.previousElementSibling;
             if (prevTab && prevTab.classList.contains('item')) {
                 (prevTab as HTMLElement).click();
-                showMessage("已切换到左侧页签");
             } else {
-                showMessage("已经是最左侧页签");
+                showMessage(this.i18n.switchTabLeft);
             }
         }
     }
@@ -421,9 +415,8 @@ export default class MouseEventsPlugin extends Plugin {
             const nextTab = activeTab.nextElementSibling;
             if (nextTab && nextTab.classList.contains('item')) {
                 (nextTab as HTMLElement).click();
-                showMessage("已切换到右侧页签");
             } else {
-                showMessage("已经是最右侧页签");
+                showMessage(this.i18n.switchTabRight);
             }
         }
     }

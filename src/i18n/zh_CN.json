@@ -1,8 +1,14 @@
 {
-  "addTopBarIcon": "鼠标事件插件已启用",
-  "pluginName": "鼠标事件插件",
-  "scrollToTopSuccess": "已滚动到顶部",
-  "locateDocSuccess": "已定位到当前文档",
-  "locateDocFailed": "无法在文档树中找到当前文档",
-  "pluginEnabled": "鼠标事件插件已启用"
+  "pluginOnload": "鼠标事件插件已加载",
+  "pluginOnunload": "鼠标事件插件已卸载",
+  "scrollToTop": "已滚动到顶部",
+  "scrollToBottom": "已滚动到底部",
+  "uptooltipText": "跳转至顶部",
+  "downtooltipText": "跳转至底部",
+  "lefttooltipText": "切换至左侧页签",
+  "righttooltipText": "切换至右侧页签",
+  "locateCurrentDocInTreeErr1": "无法获取当前文档ID",
+  "locateCurrentDocInTreeErr2": "无法在文档树中找到当前文档",
+  "switchTabLeft": "已经是最左侧页签",
+  "switchTabRight": "已经是最右侧页签"
 }
