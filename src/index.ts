@@ -13,6 +13,9 @@ export default class MouseEventsPlugin extends Plugin {
     // 最小有效手势长度
     private readonly MIN_GESTURE_LENGTH: number = 30; 
 
+    // 水平方向阈值，单位像素
+    private readonly HORIZONTAL_THRESHOLD: number = 50;
+
     // 轨迹相关属性
     private gestureTrack: {x: number, y: number}[] = [];
     private trackElement: HTMLElement | null = null;
@@ -86,6 +89,12 @@ export default class MouseEventsPlugin extends Plugin {
                     if (element) {
                         (element as HTMLElement).click();
                     }
+                } else if (this.gestureDirection === 'left') {
+                    this.switchTabLeft();
+
+                } else if (this.gestureDirection === 'right') {
+                    this.switchTabRight();
+
                 }
             }
 
@@ -247,7 +256,23 @@ export default class MouseEventsPlugin extends Plugin {
         
         // 更新内容和显示状态
         if (this.isValidGesture) {
-            this.tooltipElement.textContent = this.gestureDirection === 'up' ? '跳转至顶部' : '跳转至底部';
+            let tooltipText = '';
+
+            switch (this.gestureDirection) {
+                case 'up':
+                    tooltipText = '跳转至顶部';
+                    break;
+                case 'down':
+                    tooltipText = '跳转至底部';
+                    break;
+                case 'left':
+                    tooltipText = '切换至左侧页签';
+                    break;
+                case 'right':
+                    tooltipText = '切换至右侧页签';
+                    break;
+            }
+            this.tooltipElement.textContent = tooltipText;
             this.tooltipElement.style.display = 'block';
         } else {
             this.tooltipElement.style.display = 'none';
@@ -302,6 +327,22 @@ export default class MouseEventsPlugin extends Plugin {
                 this.isValidGesture = false;
 
             }
+        }
+        // 判断是否是水平手势（水平分量大于垂直分量的2倍）
+        else if (Math.abs(deltaX) > Math.abs(deltaY) * 2) {
+
+            if (deltaX > this.HORIZONTAL_THRESHOLD) {
+                this.isValidGesture = true;
+                this.gestureDirection = 'right';
+                
+            } else if (deltaX < -this.HORIZONTAL_THRESHOLD) {
+                this.isValidGesture = true;
+                this.gestureDirection = 'left';
+
+            } else {
+                this.isValidGesture = false;
+            }
+
         } else {
             this.isValidGesture = false;
 
@@ -358,4 +399,33 @@ export default class MouseEventsPlugin extends Plugin {
             showMessage("无法在文档树中找到当前文档");
         }
     }
+
+    // 切换到左侧页签
+    private switchTabLeft() {
+        const activeTab = document.querySelector('.layout-tab-bar .item--focus');
+        if (activeTab) {
+            const prevTab = activeTab.previousElementSibling;
+            if (prevTab && prevTab.classList.contains('item')) {
+                (prevTab as HTMLElement).click();
+                showMessage("已切换到左侧页签");
+            } else {
+                showMessage("已经是最左侧页签");
+            }
+        }
+    }
+
+    // 切换到右侧页签
+    private switchTabRight() {
+        const activeTab = document.querySelector('.layout-tab-bar .item--focus');
+        if (activeTab) {
+            const nextTab = activeTab.nextElementSibling;
+            if (nextTab && nextTab.classList.contains('item')) {
+                (nextTab as HTMLElement).click();
+                showMessage("已切换到右侧页签");
+            } else {
+                showMessage("已经是最右侧页签");
+            }
+        }
+    }
+    
 }
