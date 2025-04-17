@@ -1,0 +1,81 @@
+<svg width="800" height="600" xmlns="http://www.w3.org/2000/svg">
+  <!-- 背景 -->
+  <rect width="800" height="600" fill="#f5f5f7" rx="10" ry="10"/>
+  
+  <!-- 标题 -->
+  <text x="400" y="60" font-family="Arial, sans-serif" font-size="32" font-weight="bold" text-anchor="middle" fill="#3498db">思源笔记鼠标手势插件</text>
+  <text x="400" y="95" font-family="Arial, sans-serif" font-size="18" text-anchor="middle" fill="#555">提升效率的智能鼠标操作</text>
+  
+  <!-- 中心点 -->
+  <circle cx="400" cy="300" r="8" fill="#e74c3c"/>
+  
+  <!-- 上方手势 -->
+  <g>
+    <!-- 轨迹 -->
+    <path d="M400,300 Q400,230 400,180" stroke="#3498db" stroke-width="4" fill="none" stroke-dasharray="5,5"/>
+    <!-- 箭头 -->
+    <polygon points="400,170 395,180 405,180" fill="#3498db"/>
+    <!-- 鼠标图标 -->
+    <g transform="translate(400, 180) scale(0.8)">
+      <path d="M-10,0 Q-10,-15 0,-15 Q10,-15 10,0 L10,15 Q10,20 0,20 Q-10,20 -10,15 Z" fill="#555" stroke="#333" stroke-width="1"/>
+      <rect x="-2" y="-10" width="4" height="8" fill="#e74c3c" rx="2" ry="2"/>
+    </g>
+    <!-- 功能说明 -->
+    <rect x="300" y="120" width="200" height="40" rx="5" ry="5" fill="#3498db" opacity="0.9"/>
+    <text x="400" y="145" font-family="Arial, sans-serif" font-size="14" font-weight="bold" text-anchor="middle" fill="white">滚动到文档顶部</text>
+  </g>
+  
+  <!-- 下方手势 -->
+  <g>
+    <!-- 轨迹 -->
+    <path d="M400,300 Q400,370 400,420" stroke="#e74c3c" stroke-width="4" fill="none" stroke-dasharray="5,5"/>
+    <!-- 箭头 -->
+    <polygon points="400,430 395,420 405,420" fill="#e74c3c"/>
+    <!-- 鼠标图标 -->
+    <g transform="translate(400, 420) scale(0.8)">
+      <path d="M-10,0 Q-10,-15 0,-15 Q10,-15 10,0 L10,15 Q10,20 0,20 Q-10,20 -10,15 Z" fill="#555" stroke="#333" stroke-width="1"/>
+      <rect x="-2" y="-10" width="4" height="8" fill="#e74c3c" rx="2" ry="2"/>
+    </g>
+    <!-- 功能说明 -->
+    <rect x="300" y="440" width="200" height="40" rx="5" ry="5" fill="#e74c3c" opacity="0.9"/>
+    <text x="400" y="465" font-family="Arial, sans-serif" font-size="14" font-weight="bold" text-anchor="middle" fill="white">滚动到文档底部</text>
+  </g>
+  
+  <!-- 左侧手势 -->
+  <g>
+    <!-- 轨迹 -->
+    <path d="M400,300 Q330,300 280,300" stroke="#2ecc71" stroke-width="4" fill="none" stroke-dasharray="5,5"/>
+    <!-- 箭头 -->
+    <polygon points="270,300 280,295 280,305" fill="#2ecc71"/>
+    <!-- 鼠标图标 -->
+    <g transform="translate(280, 300) scale(0.8)">
+      <path d="M-10,0 Q-10,-15 0,-15 Q10,-15 10,0 L10,15 Q10,20 0,20 Q-10,20 -10,15 Z" fill="#555" stroke="#333" stroke-width="1"/>
+      <rect x="-2" y="-10" width="4" height="8" fill="#e74c3c" rx="2" ry="2"/>
+    </g>
+    <!-- 功能说明 -->
+    <rect x="150" y="260" width="120" height="80" rx="5" ry="5" fill="#2ecc71" opacity="0.9"/>
+    <text x="210" y="295" font-family="Arial, sans-serif" font-size="14" font-weight="bold" text-anchor="middle" fill="white">切换到</text>
+    <text x="210" y="315" font-family="Arial, sans-serif" font-size="14" font-weight="bold" text-anchor="middle" fill="white">左侧页签</text>
+  </g>
+  
+  <!-- 右侧手势 -->
+  <g>
+    <!-- 轨迹 -->
+    <path d="M400,300 Q470,300 520,300" stroke="#9b59b6" stroke-width="4" fill="none" stroke-dasharray="5,5"/>
+    <!-- 箭头 -->
+    <polygon points="530,300 520,295 520,305" fill="#9b59b6"/>
+    <!-- 鼠标图标 -->
+    <g transform="translate(520, 300) scale(0.8)">
+      <path d="M-10,0 Q-10,-15 0,-15 Q10,-15 10,0 L10,15 Q10,20 0,20 Q-10,20 -10,15 Z" fill="#555" stroke="#333" stroke-width="1"/>
+      <rect x="-2" y="-10" width="4" height="8" fill="#e74c3c" rx="2" ry="2"/>
+    </g>
+    <!-- 功能说明 -->
+    <rect x="530" y="260" width="120" height="80" rx="5" ry="5" fill="#9b59b6" opacity="0.9"/>
+    <text x="590" y="295" font-family="Arial, sans-serif" font-size="14" font-weight="bold" text-anchor="middle" fill="white">切换到</text>
+    <text x="590" y="315" font-family="Arial, sans-serif" font-size="14" font-weight="bold" text-anchor="middle" fill="white">右侧页签</text>
+  </g>
+  
+  <!-- 底部说明 -->
+  <text x="400" y="530" font-family="Arial, sans-serif" font-size="16" font-weight="bold" text-anchor="middle" fill="#333">按住鼠标右键 → 移动 → 释放 = 快速操作</text>
+  <text x="400" y="560" font-family="Arial, sans-serif" font-size="14" text-anchor="middle" fill="#555">提高工作效率，减少重复操作</text>
+</svg>
