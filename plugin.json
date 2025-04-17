@@ -1,16 +1,13 @@
 {
   "name": "mouse-events-plugin",
-  "author": "SiYuan",
-  "url": "https://github.com/siyuan-note/mouse-events-plugin",
+  "author": "wwxiaoqi",
+  "url": "https://github.com/wwxiaoqi/siyuan-mouse-events-plugin",
   "version": "0.1.0",
   "minAppVersion": "3.1.27",
   "backends": [
     "windows",
     "linux",
     "darwin",
-    "ios",
-    "android",
-    "harmony",
     "docker"
   ],
   "frontends": [
@@ -21,12 +18,12 @@
     "desktop-window"
   ],
   "displayName": {
-    "default": "Mouse Events Plugin",
-    "zh_CN": "鼠标事件插件"
+    "default": "Mouse gesture plugin",
+    "zh_CN": "鼠标手势插件"
   },
   "description": {
-    "default": "Monitor mouse events in SiYuan editor",
-    "zh_CN": "在思源编辑器中监听鼠标事件"
+    "default": "Use mouse gestures in the Siyuan Editor",
+    "zh_CN": "在思源编辑器中使用鼠标手势"
   },
   "readme": {
     "default": "README.md",
@@ -40,8 +37,8 @@
   },
   "keywords": [
     "mouse",
-    "events",
     "鼠标",
-    "事件"
+    "gesture",
+    "手势"
   ]
 }
