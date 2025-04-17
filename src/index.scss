@@ -1,0 +1,29 @@
+/* 鼠标事件插件样式 */
+.mouse-events-plugin {
+  &__icon {
+    height: 16px;
+    width: 16px;
+    margin-right: 4px;
+  }
+  
+  &__message {
+    padding: 8px;
+    border-radius: 4px;
+    background-color: var(--b3-theme-background);
+    color: var(--b3-theme-on-background);
+    box-shadow: 0 0 3px rgba(0, 0, 0, 0.1);
+  }
+}
+
+/* 右键上移指示器样式 */
+.right-drag-indicator {
+  position: fixed;
+  width: 24px;
+  height: 24px;
+  pointer-events: none;
+  opacity: 0.7;
+  z-index: 999;
+  background-color: var(--b3-theme-primary);
+  border-radius: 50%;
+  display: none;
+}

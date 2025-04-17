@@ -1,0 +1,8 @@
+{
+  "addTopBarIcon": "Mouse Events Plugin Enabled",
+  "pluginName": "Mouse Events Plugin",
+  "scrollToTopSuccess": "Scrolled to top",
+  "locateDocSuccess": "Located current document",
+  "locateDocFailed": "Could not find current document in tree",
+  "pluginEnabled": "Mouse Events Plugin Enabled"
+}

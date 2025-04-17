@@ -1,0 +1,47 @@
+{
+  "name": "mouse-events-plugin",
+  "author": "SiYuan",
+  "url": "https://github.com/siyuan-note/mouse-events-plugin",
+  "version": "0.1.0",
+  "minAppVersion": "3.1.27",
+  "backends": [
+    "windows",
+    "linux",
+    "darwin",
+    "ios",
+    "android",
+    "harmony",
+    "docker"
+  ],
+  "frontends": [
+    "desktop",
+    "mobile",
+    "browser-desktop",
+    "browser-mobile",
+    "desktop-window"
+  ],
+  "displayName": {
+    "default": "Mouse Events Plugin",
+    "zh_CN": "鼠标事件插件"
+  },
+  "description": {
+    "default": "Monitor mouse events in SiYuan editor",
+    "zh_CN": "在思源编辑器中监听鼠标事件"
+  },
+  "readme": {
+    "default": "README.md",
+    "zh_CN": "README_zh_CN.md"
+  },
+  "funding": {
+    "openCollective": "",
+    "patreon": "",
+    "github": "",
+    "custom": []
+  },
+  "keywords": [
+    "mouse",
+    "events",
+    "鼠标",
+    "事件"
+  ]
+}
