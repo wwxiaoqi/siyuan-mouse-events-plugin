@@ -7,7 +7,7 @@ import { IObject } from "siyuan";
 import { GesturePoint, GestureDirection } from '../types';
 import { CONSTANTS } from '../constants';
 import { GestureUI } from '../ui/gestureUI';
-import { handleScrollClick, getCurrentDocId, locateCurrentDocInTree, switchTabLeft, switchTabRight } from '../utils/dom';
+import { handleScrollClick, getCurrentDocId, locateCurrentDocInTree, handleTabSwitch } from '../utils/dom';
 
 export class MouseEventHandler {
     private i18n: IObject;
@@ -89,10 +89,13 @@ export class MouseEventHandler {
                     handleScrollClick('down');
 
                 } else if (this.gestureDirection === 'left') {
-                    switchTabLeft(this.i18n);
+                    // switchTabLeft(this.i18n);
+                    handleTabSwitch('left', this.i18n);
+
 
                 } else if (this.gestureDirection === 'right') {
-                    switchTabRight(this.i18n);
+                    // switchTabRight(this.i18n);
+                    handleTabSwitch('right', this.i18n);
 
                 }
             }

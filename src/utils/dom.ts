@@ -159,3 +159,42 @@ export function switchTabRight(i18n: IObject): void {
         }
     }
 }
+
+/**
+ * 根据方向切换标签页（左 left、右 right）
+ */
+export function handleTabSwitch(direction: 'left' | 'right', i18n: IObject): void {
+    // 获取中心布局容器
+    const centerLayout = document.querySelector('.layout__center.fn__flex-1.fn__flex');
+    if (!centerLayout) return;
+
+    // 获取分割线两侧的内容区域
+    const contentDivs = centerLayout.querySelectorAll('.fn__flex-1.fn__flex');
+
+    // 查找当前激活的窗口
+    let activeContentDiv = null;
+    contentDivs.forEach(div => {
+        if (div.querySelector('.layout__wnd--active')) {
+            activeContentDiv = div;
+        }
+    });
+
+    if (activeContentDiv) {
+        // 在激活窗口中查找当前激活的标签页
+        const activeTab = activeContentDiv.querySelector('.layout-tab-bar .item--focus');
+        if (activeTab) {
+            // 根据方向获取目标标签页
+            const targetTab = direction === 'left' 
+                ? activeTab.previousElementSibling
+                : activeTab.nextElementSibling;
+
+            // 如果目标标签页存在且是有效的标签页，则触发点击
+            if (targetTab && targetTab.classList.contains('item')) {
+                (targetTab as HTMLElement).click();
+            } else {
+                // 显示提示消息
+                showMessage(i18n[direction === 'left' ? "switchTabLeft" : "switchTabRight"]);
+            }
+        }
+    }
+}
