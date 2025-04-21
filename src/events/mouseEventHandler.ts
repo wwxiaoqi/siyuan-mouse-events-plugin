@@ -29,20 +29,20 @@ export class MouseEventHandler {
      * 注册鼠标事件监听
      */
     public registerEvents(): void {
-        document.addEventListener("mousedown", this.handleMouseDown, true);
-        document.addEventListener("mouseup", this.handleMouseUp, true);
-        document.addEventListener("mousemove", this.handleMouseMove, true);
-        document.addEventListener("auxclick", this.handleMiddleClick, true);
+        document.addEventListener("mousedown", this.handleMouseDown, false);
+        document.addEventListener("mouseup", this.handleMouseUp, false);
+        document.addEventListener("mousemove", this.handleMouseMove, false);
+        document.addEventListener("auxclick", this.handleMiddleClick, false);
     }
     
     /**
      * 注销鼠标事件监听
      */
     public unregisterEvents(): void {
-        document.removeEventListener("mousedown", this.handleMouseDown, true);
-        document.removeEventListener("mouseup", this.handleMouseUp, true);
-        document.removeEventListener("mousemove", this.handleMouseMove, true);
-        document.removeEventListener("auxclick", this.handleMiddleClick, true);
+        document.removeEventListener("mousedown", this.handleMouseDown, false);
+        document.removeEventListener("mouseup", this.handleMouseUp, false);
+        document.removeEventListener("mousemove", this.handleMouseMove, false);
+        document.removeEventListener("auxclick", this.handleMiddleClick, false);
     }
     
     /**
@@ -61,8 +61,8 @@ export class MouseEventHandler {
             this.gestureUI.createTrackElement();
             this.gestureUI.createTooltipElement();
 
-            // 阻止默认的右键菜单
-            event.preventDefault();
+            // 不阻止默认的右键菜单，允许普通右键点击显示菜单
+            // event.preventDefault();
         }
     }
     
@@ -74,12 +74,12 @@ export class MouseEventHandler {
         // 右键释放
         if (event.button === 2 && this.rightMouseDown) {
 
-            // 阻止默认的右键菜单
-            event.preventDefault();
-
             // 如果是有效手势，执行相应操作
             if (this.isValidGesture) {
-                
+
+                // 阻止默认的右键菜单
+                event.preventDefault();
+
                 if (this.gestureDirection === 'up') {
                     // scrollToTop();
                     handleScrollClick('up');
@@ -91,7 +91,6 @@ export class MouseEventHandler {
                 } else if (this.gestureDirection === 'left') {
                     // switchTabLeft(this.i18n);
                     handleTabSwitch('left', this.i18n);
-
 
                 } else if (this.gestureDirection === 'right') {
                     // switchTabRight(this.i18n);
@@ -125,9 +124,17 @@ export class MouseEventHandler {
         // 更新轨迹显示
         this.gestureUI.updateTrackElement(this.gestureTrack, this.isValidGesture);
         
+        // 保存当前手势状态
+        const wasValidGesture = this.isValidGesture;
+        
         // 判断手势是否有效
         this.evaluateGesture();
-        
+
+        // 如果手势变为有效，阻止默认右键菜单
+        if (!wasValidGesture && this.isValidGesture) {
+            event.preventDefault();
+        }
+
         // 更新提示窗口
         this.gestureUI.updateTooltipElement(
             event.clientX, 
