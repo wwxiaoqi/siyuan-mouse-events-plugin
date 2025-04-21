@@ -80,15 +80,11 @@ export default class MouseEventsPlugin extends Plugin {
 
                 // 判断轨迹路径是向上还是向下
                 if (this.gestureDirection === 'up') {
-                    const element = document.querySelector('.protyle-scroll__up.ariaLabel');
-                    if (element) {
-                        (element as HTMLElement).click();
-                    }
+                    this.handleScrollClick('up');
+
                 } else if (this.gestureDirection === 'down') {
-                    const element = document.querySelector('.protyle-scroll__down.ariaLabel');
-                    if (element) {
-                        (element as HTMLElement).click();
-                    }
+                    this.handleScrollClick('down');
+                    
                 } else if (this.gestureDirection === 'left') {
                     this.switchTabLeft();
 
@@ -421,4 +417,57 @@ export default class MouseEventsPlugin extends Plugin {
         }
     }
     
+    private handleScrollClick(direction: 'up' | 'down'): void {
+        // 根据方向获取对应的选择器
+        const getScrollSelector = (dir: 'up' | 'down'): string => {
+            return dir === 'up' 
+                ? '.protyle-scroll__up.ariaLabel' 
+                : '.protyle-scroll__down.ariaLabel';
+        };
+    
+        // 获取中心布局容器
+        const centerLayout = document.querySelector('.layout__center.fn__flex-1.fn__flex');
+        if (!centerLayout) return;
+    
+        // 获取分割线两侧的内容区域
+        const contentDivs = centerLayout.querySelectorAll('.fn__flex-1.fn__flex');
+    
+        // 查找当前激活的窗口
+        let activeContentDiv = null;
+        contentDivs.forEach(div => {
+            if (div.querySelector('.layout__wnd--active')) {
+                activeContentDiv = div;
+            }
+        });
+    
+        if (activeContentDiv) {
+            // 获取激活窗口中的所有标签页
+            const tabs = activeContentDiv.querySelectorAll('.layout-tab-bar li[data-type="tab-header"]');
+            
+            // 查找当前激活的标签页索引
+            let activeTabIndex = -1;
+            tabs.forEach((tab, index) => {
+                if (tab.classList.contains('item--focus')) {
+                    activeTabIndex = index;
+                }
+            });
+    
+            // 获取所有编辑器容器
+            const protyleContainers = activeContentDiv.querySelectorAll('.protyle');
+            
+            // 如果找到了激活的标签页，则在对应的容器中查找并点击目标元素
+            if (activeTabIndex !== -1 && protyleContainers.length > activeTabIndex) {
+                // 获取当前激活标签页对应的编辑器容器
+                const targetContainer = protyleContainers[activeTabIndex];
+                // 在容器中查找滚动按钮
+                const targetElement = targetContainer.querySelector(getScrollSelector(direction)) as HTMLElement;
+                
+                // 如果找到了目标元素，则触发点击事件
+                if (targetElement) {
+                    targetElement.click();
+                }
+            }
+        }
+    }
+
 }
