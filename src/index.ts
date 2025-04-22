@@ -27,11 +27,11 @@ class MouseEventsPlugin extends Plugin {
     /**
      * 插件加载
      */
-    onload() {
+    async onload() {
         console.log(this.i18n.pluginOnload);
 
         // 加载设置
-        this.loadSettings();
+        await this.loadSettings();
 
         // 初始化鼠标事件处理器
         this.mouseEventHandler = new MouseEventHandler(this.i18n, this.settings);
@@ -78,10 +78,10 @@ class MouseEventsPlugin extends Plugin {
      */
     private createSettingsPanel(): HTMLElement {
         // 创建设置UI实例
-        const settingsUI = new SettingsUI(this.i18n, this.settings, (updatedSettings) => {
+        const settingsUI = new SettingsUI(this.i18n, this.settings, async (updatedSettings) => {
             // 保存更新后的设置
             this.settings = updatedSettings;
-            this.saveSettings();
+            await this.saveSettings();
 
             // 根据设置更新鼠标事件处理
             this.updateMouseEventHandler();
@@ -113,16 +113,16 @@ class MouseEventsPlugin extends Plugin {
     /**
      * 加载设置
      */
-    private loadSettings() {
-        const savedSettings = this.data[STORAGE_NAME];
-        if (savedSettings) {
-            try {
-                this.settings = JSON.parse(savedSettings);
-            } catch (e) {
-                console.error("Failed to parse settings:", e);
+    private async loadSettings() {
+        try {
+            const savedSettings = await this.loadData(STORAGE_NAME);
+            if (savedSettings) {
+                this.settings = typeof savedSettings === 'string' ? JSON.parse(savedSettings) : savedSettings;
+            } else {
                 this.settings = { ...DEFAULT_SETTINGS };
             }
-        } else {
+        } catch (e) {
+            console.error("Failed to load settings:", e);
             this.settings = { ...DEFAULT_SETTINGS };
         }
     }
@@ -130,8 +130,8 @@ class MouseEventsPlugin extends Plugin {
     /**
      * 保存设置
      */
-    private saveSettings() {
-        this.data[STORAGE_NAME] = JSON.stringify(this.settings);
+    private async saveSettings() {
+        await this.saveData(STORAGE_NAME, this.settings);
     }
 
 };
