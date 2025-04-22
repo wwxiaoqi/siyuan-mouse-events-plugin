@@ -4,13 +4,14 @@
  */
 
 import { IObject } from "siyuan";
-import { GesturePoint, GestureDirection } from '../types';
-import { CONSTANTS } from '../constants';
+import { GesturePoint, GestureDirection, GestureSettings } from '../types';
+import { CONSTANTS, GESTURE_ACTIONS } from '../constants';
 import { GestureUI } from '../ui/gestureUI';
 import { handleScrollClick, getCurrentDocId, locateCurrentDocInTree, handleTabSwitch } from '../utils/dom';
 
 export class MouseEventHandler {
     private i18n: IObject;
+    private settings: GestureSettings;
 
     private rightMouseDown: boolean = false;
     private gestureTrack: GesturePoint[] = [];
@@ -20,9 +21,18 @@ export class MouseEventHandler {
     // UI管理器
     private gestureUI: GestureUI;
     
-    constructor(i18n: IObject) {
+    constructor(i18n: IObject, settings: GestureSettings) {
         this.i18n = i18n;
+        this.settings = settings;
         this.gestureUI = new GestureUI();
+    }
+    
+    /**
+     * 更新设置
+     * @param settings 新的设置
+     */
+    public updateSettings(settings: GestureSettings): void {
+        this.settings = settings;
     }
     
     /**
@@ -50,6 +60,11 @@ export class MouseEventHandler {
      */
     private handleMouseDown = (event: MouseEvent): void => {
 
+        // 如果手势被禁用，直接返回
+        if (!this.settings.enableGestures) {
+            return;
+        }
+
         // 右键按下
         if (event.button === 2) {
             this.rightMouseDown = true;
@@ -57,9 +72,15 @@ export class MouseEventHandler {
             this.isValidGesture = false;
             this.gestureDirection = '';
             
-            // 创建轨迹元素和提示窗口
-            this.gestureUI.createTrackElement();
-            this.gestureUI.createTooltipElement();
+            // 创建轨迹元素
+            if (this.settings.showGestureTrack) {
+                this.gestureUI.createTrackElement();
+            }
+            
+            // 创建提示窗口
+            if (this.settings.showGestureTooltip) {
+                this.gestureUI.createTooltipElement();
+            }
 
             // 不阻止默认的右键菜单，允许普通右键点击显示菜单
             // event.preventDefault();
@@ -71,6 +92,11 @@ export class MouseEventHandler {
      */
     private handleMouseUp = (event: MouseEvent): void => {
 
+        // 如果手势被禁用，直接返回
+        if (!this.settings.enableGestures) {
+            return;
+        }
+
         // 右键释放
         if (event.button === 2 && this.rightMouseDown) {
 
@@ -80,22 +106,34 @@ export class MouseEventHandler {
                 // 阻止默认的右键菜单
                 event.preventDefault();
 
-                if (this.gestureDirection === 'up') {
-                    // scrollToTop();
-                    handleScrollClick('up');
-
-                } else if (this.gestureDirection === 'down') {
-                    // scrollToBottom();
-                    handleScrollClick('down');
-
-                } else if (this.gestureDirection === 'left') {
-                    // switchTabLeft(this.i18n);
-                    handleTabSwitch('left', this.i18n);
-
-                } else if (this.gestureDirection === 'right') {
-                    // switchTabRight(this.i18n);
-                    handleTabSwitch('right', this.i18n);
-
+                // 获取当前方向的配置操作
+                const action = this.settings.gestureActions[this.gestureDirection] || GESTURE_ACTIONS.NO_ACTION;
+                
+                // 执行相应操作
+                switch (action) {
+                    case GESTURE_ACTIONS.SCROLL_TOP:
+                        handleScrollClick('up');
+                        break;
+                    case GESTURE_ACTIONS.SCROLL_BOTTOM:
+                        handleScrollClick('down');
+                        break;
+                    case GESTURE_ACTIONS.SWITCH_LEFT:
+                        handleTabSwitch('left', this.i18n);
+                        break;
+                    case GESTURE_ACTIONS.SWITCH_RIGHT:
+                        handleTabSwitch('right', this.i18n);
+                        break;
+                    case GESTURE_ACTIONS.LOCATE_DOC:
+                        const currentDocId = getCurrentDocId();
+                        if (currentDocId) {
+                            locateCurrentDocInTree(currentDocId, this.i18n);
+                        }
+                        break;
+                    
+                    // 无操作或未知操作不执行任何动作
+                    case GESTURE_ACTIONS.NO_ACTION:
+                    default:
+                        break;
                 }
             }
             
@@ -113,6 +151,11 @@ export class MouseEventHandler {
      */
     private handleMouseMove = (event: MouseEvent): void => {
 
+        // 如果手势被禁用，直接返回
+        if (!this.settings.enableGestures) {
+            return;
+        }
+
         // 只在右键按下时处理
         if (!this.rightMouseDown) {
             return;
@@ -122,8 +165,10 @@ export class MouseEventHandler {
         this.gestureTrack.push({x: event.clientX, y: event.clientY});
         
         // 更新轨迹显示
-        this.gestureUI.updateTrackElement(this.gestureTrack, this.isValidGesture);
-        
+        if (this.settings.showGestureTrack) {
+            this.gestureUI.updateTrackElement(this.gestureTrack, this.isValidGesture);
+        }
+
         // 保存当前手势状态
         const wasValidGesture = this.isValidGesture;
         
@@ -136,13 +181,15 @@ export class MouseEventHandler {
         }
 
         // 更新提示窗口
-        this.gestureUI.updateTooltipElement(
-            event.clientX, 
-            event.clientY, 
-            this.isValidGesture, 
-            this.gestureDirection, 
-            this.i18n
-        );
+        if (this.settings.showGestureTooltip) {
+            this.gestureUI.updateTooltipElement(
+                event.clientX, 
+                event.clientY, 
+                this.isValidGesture, 
+                this.gestureDirection, 
+                this.i18n
+            );
+        }
     }
     
     /**

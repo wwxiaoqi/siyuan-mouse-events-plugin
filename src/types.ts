@@ -10,3 +10,13 @@ export interface GesturePoint {
 
 // 手势方向类型
 export type GestureDirection = 'up' | 'down' | 'left' | 'right' | '';
+
+// 手势设置类型
+export interface GestureSettings {
+    enableGestures: boolean;
+    showGestureTrack: boolean;
+    showGestureTooltip: boolean;
+    gestureActions: {
+        [key: string]: string;
+    };
+}
