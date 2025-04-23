@@ -102,8 +102,6 @@ export class MouseEventHandler {
 
             // 如果是有效手势，执行相应操作
             if (this.isValidGesture) {
-
-                // 阻止默认的右键菜单
                 event.preventDefault();
 
                 // 获取当前方向的配置操作
@@ -111,39 +109,7 @@ export class MouseEventHandler {
 
                 // 只有当操作不是无操作时，才执行相应操作
                 if (action !== GESTURE_ACTIONS.NO_ACTION) {
-                    // 执行相应操作
-                    switch (action) {
-                        case GESTURE_ACTIONS.SCROLL_TOP:
-                            handleScrollClick('up');
-                            break;
-                        case GESTURE_ACTIONS.SCROLL_BOTTOM:
-                            handleScrollClick('down');
-                            break;
-                        case GESTURE_ACTIONS.SWITCH_LEFT:
-                            handleTabSwitch('left', this.i18n);
-                            break;
-                        case GESTURE_ACTIONS.SWITCH_RIGHT:
-                            handleTabSwitch('right', this.i18n);
-                            break;
-                        case GESTURE_ACTIONS.LOCATE_DOC:
-                            const currentDocId = getCurrentDocId();
-                            if (currentDocId) {
-                                locateCurrentDocInTree(currentDocId, this.i18n);
-                            }
-                            break;
-                        case GESTURE_ACTIONS.CLOSE_TAB:
-                            closeCurrentTab();
-                            break;
-                        case GESTURE_ACTIONS.CLOSE_ALL_TABS:
-                            closeAllTabs();
-                            break;
-                        case GESTURE_ACTIONS.CLOSE_OTHER_TABS:
-                            closeOtherTabs();
-                            break;
-                        default:
-                            // 未知操作不执行任何动作
-                            break;
-                    }
+                    this.executeGestureAction(action);
                 }
             }
 
@@ -153,6 +119,45 @@ export class MouseEventHandler {
 
             this.rightMouseDown = false;
             this.gestureTrack = [];
+        }
+    }
+
+    /**
+     * 执行手势动作
+     * @param action 要执行的动作
+     */
+    private executeGestureAction(action: string): void {
+        switch (action) {
+            case GESTURE_ACTIONS.SCROLL_TOP:
+                handleScrollClick('up');
+                break;
+            case GESTURE_ACTIONS.SCROLL_BOTTOM:
+                handleScrollClick('down');
+                break;
+            case GESTURE_ACTIONS.SWITCH_LEFT:
+                handleTabSwitch('left', this.i18n);
+                break;
+            case GESTURE_ACTIONS.SWITCH_RIGHT:
+                handleTabSwitch('right', this.i18n);
+                break;
+            case GESTURE_ACTIONS.LOCATE_DOC:
+                const currentDocId = getCurrentDocId();
+                if (currentDocId) {
+                    locateCurrentDocInTree(currentDocId, this.i18n);
+                }
+                break;
+            case GESTURE_ACTIONS.CLOSE_TAB:
+                closeCurrentTab();
+                break;
+            case GESTURE_ACTIONS.CLOSE_ALL_TABS:
+                closeAllTabs();
+                break;
+            case GESTURE_ACTIONS.CLOSE_OTHER_TABS:
+                closeOtherTabs();
+                break;
+            default:
+                // 未知操作不执行任何动作
+                break;
         }
     }
 
@@ -181,12 +186,8 @@ export class MouseEventHandler {
         this.evaluateGesture();
 
         // 检查当前手势对应的操作是否为无操作
-        let hasAssociatedAction = false;
-        if (this.isValidGesture && this.gestureDirection) {
-            const action = this.settings.gestureActions[this.gestureDirection];
-            hasAssociatedAction = Boolean(action) && action !== GESTURE_ACTIONS.NO_ACTION;
-        }
-        
+        const hasAssociatedAction = this.checkHasAssociatedAction();
+
         // 更新轨迹显示，传入是否有关联操作的信息
         if (this.settings.showGestureTrack) {
             this.gestureUI.updateTrackElement(this.gestureTrack, this.isValidGesture && hasAssociatedAction);
@@ -212,6 +213,18 @@ export class MouseEventHandler {
             // 隐藏提示窗口
             this.gestureUI.hideTooltip();
         }
+    }
+
+    /**
+     * 检查当前手势是否有关联的操作
+     * @returns 是否有关联操作
+     */
+    private checkHasAssociatedAction(): boolean {
+        if (this.isValidGesture && this.gestureDirection) {
+            const action = this.settings.gestureActions[this.gestureDirection];
+            return Boolean(action) && action !== GESTURE_ACTIONS.NO_ACTION;
+        }
+        return false;
     }
 
     /**
@@ -293,6 +306,19 @@ export class MouseEventHandler {
     }
 
     /**
+     * 计算两点之间的垂直和水平位移
+     * @param startPoint 起点
+     * @param endPoint 终点
+     * @returns 位移对象 {deltaX, deltaY}
+     */
+    private calculateDelta(startPoint: GesturePoint, endPoint: GesturePoint): { deltaX: number, deltaY: number } {
+        return {
+            deltaX: startPoint.x - endPoint.x,
+            deltaY: startPoint.y - endPoint.y
+        };
+    }
+
+    /**
      * 将轨迹分段，每段识别一个主方向
      * @returns 主方向数组
      */
@@ -306,8 +332,7 @@ export class MouseEventHandler {
             const endPoint = this.gestureTrack[this.gestureTrack.length - 1];
 
             // 计算垂直和水平位移
-            const deltaY = startPoint.y - endPoint.y;
-            const deltaX = startPoint.x - endPoint.x;
+            const { deltaX, deltaY } = this.calculateDelta(startPoint, endPoint);
 
             // 添加简单方向
             segments.push(this.getDirection(deltaX, deltaY));
@@ -344,8 +369,7 @@ export class MouseEventHandler {
                 const endPoint = this.gestureTrack[i - 1];
 
                 // 计算垂直和水平位移
-                const deltaY = startPoint.y - endPoint.y;
-                const deltaX = startPoint.x - endPoint.x;
+                const { deltaX, deltaY } = this.calculateDelta(startPoint, endPoint);
 
                 // 获取主方向
                 const direction = this.getDirection(deltaX, deltaY);
@@ -370,8 +394,7 @@ export class MouseEventHandler {
             const endPoint = this.gestureTrack[this.gestureTrack.length - 1];
 
             // 计算垂直和水平位移
-            const deltaY = startPoint.y - endPoint.y;
-            const deltaX = startPoint.x - endPoint.x;
+            const { deltaX, deltaY } = this.calculateDelta(startPoint, endPoint);
 
             // 获取主方向
             const direction = this.getDirection(deltaX, deltaY);
@@ -388,8 +411,7 @@ export class MouseEventHandler {
             const endPoint = this.gestureTrack[this.gestureTrack.length - 1];
 
             // 计算垂直和水平位移
-            const deltaY = startPoint.y - endPoint.y;
-            const deltaX = startPoint.x - endPoint.x;
+            const { deltaX, deltaY } = this.calculateDelta(startPoint, endPoint);
 
             // 获取主方向
             const direction = this.getDirection(deltaX, deltaY);
