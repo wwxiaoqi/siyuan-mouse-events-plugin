@@ -35,6 +35,9 @@
   "switchLeft": "Switch to Left Tab",
   "switchRight": "Switch to Right Tab",
   "locateDoc": "Locate Current Document",
+  "closeTab": "Close Current Tab",
+  "closeAllTabs": "Close All Tabs",
+  "closeOtherTabs": "Close Other Tabs",
   
   "left": "Left",
   "right": "Right",

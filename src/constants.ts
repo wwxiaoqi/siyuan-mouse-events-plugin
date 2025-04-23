@@ -24,7 +24,10 @@ export const GESTURE_ACTIONS = {
     'SCROLL_BOTTOM': 'scrollBottom',
     'SWITCH_LEFT': 'switchLeft',
     'SWITCH_RIGHT': 'switchRight',
-    'LOCATE_DOC': 'locateDoc'
+    'LOCATE_DOC': 'locateDoc',
+    'CLOSE_TAB': 'closeTab',
+    'CLOSE_ALL_TABS': 'closeAllTabs',
+    'CLOSE_OTHER_TABS': 'closeOtherTabs'
 };
 
 // 手势方向名称

@@ -7,7 +7,7 @@ import { IObject } from "siyuan";
 import { GesturePoint, GestureDirection, GestureSettings } from '../types';
 import { CONSTANTS, GESTURE_ACTIONS } from '../constants';
 import { GestureUI } from '../ui/gestureUI';
-import { handleScrollClick, getCurrentDocId, locateCurrentDocInTree, handleTabSwitch } from '../utils/dom';
+import { handleScrollClick, getCurrentDocId, locateCurrentDocInTree, handleTabSwitch, closeCurrentTab, closeAllTabs, closeOtherTabs } from '../utils/dom';
 
 export class MouseEventHandler {
     private i18n: IObject;
@@ -130,6 +130,15 @@ export class MouseEventHandler {
                             if (currentDocId) {
                                 locateCurrentDocInTree(currentDocId, this.i18n);
                             }
+                            break;
+                        case GESTURE_ACTIONS.CLOSE_TAB:
+                            closeCurrentTab();
+                            break;
+                        case GESTURE_ACTIONS.CLOSE_ALL_TABS:
+                            closeAllTabs();
+                            break;
+                        case GESTURE_ACTIONS.CLOSE_OTHER_TABS:
+                            closeOtherTabs();
                             break;
                         default:
                             // 未知操作不执行任何动作
