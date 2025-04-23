@@ -1,39 +1,103 @@
-# Mouse Events Plugin for SiYuan Note
+# 🖱️ Mouse Gesture Plugin for SiYuan Note
 
-This plugin monitors mouse events in the SiYuan editor interface and provides multiple gesture operations:
+> Elegantly control SiYuan Note with mouse gestures and boost your productivity!
 
-## Features
 
-1. **Right-click Gesture Operations**: Hold down the right mouse button and move to perform the following actions:
-   - **Move Upward**: Quickly scroll to the top of the current document
-   - **Move Downward**: Quickly scroll to the bottom of the current document
-   - **Move Leftward**: Switch to the left tab
-   - **Move Rightward**: Switch to the right tab
+## ✨ What Is This?
 
-2. **Gesture Track Display**: Shows the track and operation tips when performing gestures, providing intuitive feedback.
+This is a mouse gesture plugin designed for SiYuan Note that lets you perform various common actions through simple right-click mouse movements. Imagine navigating, scrolling, or closing tabs with elegant gestures instead of hunting for menus or buttons!
 
-3. **Middle-click Document Location**: Click the middle mouse button in the editor to automatically locate and highlight the current document in the document tree (if the document tree panel is open).
+## 🚀 Features
 
-## Installation
+### Basic Gestures (Single Direction)
 
-1. Download the plugin from the SiYuan marketplace
-2. Enable the plugin in Settings -> Marketplace -> Downloaded -> Plugins
+Hold the right mouse button, move in a direction, and release to trigger:
 
-## Usage
+- **👆 Swipe Up**: Quickly scroll to the top of the document
+- **👇 Swipe Down**: Quickly scroll to the bottom of the document
+- **👈 Swipe Left**: Switch to the left tab
+- **👉 Swipe Right**: Switch to the right tab
 
-### Right-click Gesture Operations
-- **Scroll to Top**: Hold down the right mouse button, move upward at least 50 pixels, then release the right button
-- **Scroll to Bottom**: Hold down the right mouse button, move downward at least 50 pixels, then release the right button
-- **Switch to Left Tab**: Hold down the right mouse button, move leftward at least 50 pixels, then release the right button
-- **Switch to Right Tab**: Hold down the right mouse button, move rightward at least 50 pixels, then release the right button
+### Advanced Gestures (Combined Directions)
 
-### Other Operations
-- **Locate Document**: Click the middle mouse button (scroll wheel) to locate the current document in the document tree
+Support for multi-directional gestures, such as:
 
-## Requirements
+- **↗️ Right then Up**: Locate the current document in the document tree
+- **↘️ Right then Down**: Close the current tab
+- **↙️ Down then Left**: Close all tabs except the current one
+- **↖️ Left then Up**: Close all tabs
+
+### Additional Utilities
+
+- **🔍 Visual Feedback**: Clear gesture tracks and operation hints
+- **🛠️ Customizable Settings**: Configure what each gesture does
+- **🖱️ Middle-click Navigation**: Quickly locate your current document in the document tree
+
+## 🔧 Installation
+
+1. Open SiYuan Note
+2. Go to Settings → Marketplace → Plugins
+3. Search for "Mouse Gesture" and install
+4. Enable the plugin
+5. Start using gestures to boost your workflow!
+
+## 📖 Usage Guide
+
+### Basic Operations
+
+1. After enabling the plugin, hold the **right mouse button** in the SiYuan Note editor
+2. While keeping the right button pressed, **move your mouse** in a direction
+3. When you see the gesture track turn **green** and a tooltip appears, **release the button** to execute the action
+
+### Customization
+
+1. Open the plugin settings panel
+2. Assign different actions to each gesture direction
+3. Toggle visibility of gesture tracks and tooltips
+4. Choose whether to hide tooltips for gestures without actions
+
+## 📋 Available Gesture Actions
+
+| Action | Description |
+|--------|-------------|
+| Scroll to Top | Quickly jump to the top of the current document |
+| Scroll to Bottom | Quickly jump to the bottom of the current document |
+| Switch to Left Tab | Activate the adjacent tab on the left |
+| Switch to Right Tab | Activate the adjacent tab on the right |
+| Locate Current Document | Find and highlight the current document in the document tree |
+| Close Current Tab | Close the currently active tab |
+| Close All Tabs | Close all open tabs |
+| Close Other Tabs | Keep the current tab open and close all others |
+
+## 💡 Tips and Tricks
+
+- Use short, direct gestures for efficiency
+- Assign your most frequent actions to simple directions
+- Reserve combination gestures for less frequent but powerful operations
+- Gesture tracks turn green for recognized gestures with actions, and gray for gestures without assigned actions
+
+## 📊 Requirements
 
 - SiYuan Note v3.1.27+
+- Works on all operating systems that support SiYuan Note
 
-## License
+## 🤝 Feedback and Contributions
 
-MIT
+If you have any questions, suggestions, or feature requests, please:
+
+- Submit an issue on the GitHub repository
+- Create a pull request with your code contribution
+- Share your experience in the SiYuan Note community
+
+## 📄 Update Logs
+
+### v0.1.3
+Optimization: Gesture/menu handling mechanism
+
+Added: Added settings interface
+
+### v0.1.2
+Fixed: Gestures only work on the first tab
+
+### v0.1.0
+Added: First version
