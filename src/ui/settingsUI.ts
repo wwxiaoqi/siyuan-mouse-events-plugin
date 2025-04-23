@@ -135,8 +135,11 @@ export class SettingsUI {
         
         // 提示文本
         const advancedHint = document.createElement('div');
-        advancedHint.className = 'config-hint';
-        advancedHint.textContent = this.i18n.advancedHint as string;
+        advancedHint.className = 'config-hint heart-hint';
+        const heartIconDiv = document.createElement('div');
+        heartIconDiv.innerHTML = getDirectionIcon('heart');
+        advancedHint.appendChild(heartIconDiv);
+
         advancedArea.appendChild(advancedHint);
         
         // 手势重置按钮

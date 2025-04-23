@@ -240,3 +240,38 @@ input:checked + .switch-slider:before {
 .config-reset-btn:active {
     background-color: rgba(255, 77, 79, 0.15);
 }
+
+/* 跳动的心形图标样式 */
+@keyframes heartBeat {
+    0% {
+        transform: scale(1);
+    }
+    14% {
+        transform: scale(1.3);
+    }
+    28% {
+        transform: scale(1);
+    }
+    42% {
+        transform: scale(1.3);
+    }
+    70% {
+        transform: scale(1);
+    }
+}
+
+.heart-icon {
+    width: 15px;
+    height: 15px;
+    fill: #e91e63;
+    animation: heartBeat 1.3s infinite;
+    vertical-align: middle;
+    margin-right: 8px;
+}
+
+.heart-hint {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    color: #555;
+}
