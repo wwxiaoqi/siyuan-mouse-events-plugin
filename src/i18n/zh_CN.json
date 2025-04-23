@@ -22,6 +22,8 @@
   "showGestureTrackDescription": "拖动鼠标时显示手势轨迹",
   "showGestureTooltip": "显示手势提示",
   "showGestureTooltipDescription": "手势识别成功时显示操作提示",
+  "hideNoActionTooltip": "隐藏无操作手势的提示",
+  "hideNoActionTooltipDescription": "当手势没有关联操作时不显示提示窗口",
   "resetAllGestures": "重置所有手势",
   "gesturesEnabled": "已启用鼠标手势",
   "gesturesDisabled": "已禁用鼠标手势",

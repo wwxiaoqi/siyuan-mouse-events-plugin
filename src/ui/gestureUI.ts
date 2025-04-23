@@ -35,9 +35,9 @@ export class GestureUI {
     /**
      * 更新轨迹显示
      * @param gestureTrack 手势轨迹点数组
-     * @param isValidGesture 是否是有效手势
+     * @param isValidGestureWithAction 是否是有效手势且有对应操作
      */
-    public updateTrackElement(gestureTrack: GesturePoint[], isValidGesture: boolean): void {
+    public updateTrackElement(gestureTrack: GesturePoint[], isValidGestureWithAction: boolean): void {
         if (!this.trackElement || gestureTrack.length < 2) return;
         
         // 清除旧的轨迹
@@ -61,7 +61,7 @@ export class GestureUI {
         
         path.setAttribute('d', d);
         path.setAttribute('fill', 'none');
-        path.setAttribute('stroke', isValidGesture ? '#4CAF50' : '#9E9E9E');
+        path.setAttribute('stroke', isValidGestureWithAction ? '#4CAF50' : '#9E9E9E');
         path.setAttribute('stroke-width', '3');
         path.setAttribute('stroke-linecap', 'round');
         path.setAttribute('stroke-linejoin', 'round');
@@ -110,8 +110,16 @@ export class GestureUI {
      * @param isValidGesture 是否是有效手势
      * @param gestureDirection 手势方向
      * @param i18n 语言
+     * @param hasAssociatedAction 是否有关联操作
      */
-    public updateTooltipElement(x: number, y: number, isValidGesture: boolean, gestureDirection: GestureDirection, i18n: IObject): void {
+    public updateTooltipElement(
+        x: number, 
+        y: number, 
+        isValidGesture: boolean, 
+        gestureDirection: GestureDirection, 
+        i18n: IObject,
+        hasAssociatedAction: boolean = true
+    ): void {
         if (!this.tooltipElement) return;
         
         // 更新位置
@@ -143,6 +151,15 @@ export class GestureUI {
                 const tooltipKey = GESTURE_TOOLTIPS[gestureDirection];
                 this.tooltipElement.textContent = tooltipKey ? i18n[tooltipKey] || gestureDirection : gestureDirection;
             }
+
+            // 如果没有关联操作，添加无操作标记
+            if (!hasAssociatedAction) {
+                const noActionText = i18n['noAction'] || 'No Action';
+                this.tooltipElement.textContent += ` (${noActionText})`;
+                this.tooltipElement.style.color = '#ff9800'; // 警告色
+            } else {
+                this.tooltipElement.style.color = 'white'; // 恢复默认颜色
+            }
             
             this.tooltipElement.style.display = 'block';
         } else {
@@ -157,6 +174,15 @@ export class GestureUI {
         if (this.tooltipElement && this.tooltipElement.parentNode) {
             this.tooltipElement.parentNode.removeChild(this.tooltipElement);
             this.tooltipElement = null;
+        }
+    }
+
+    /**
+     * 隐藏提示窗口
+     */
+    public hideTooltip(): void {
+        if (this.tooltipElement) {
+            this.tooltipElement.style.display = 'none';
         }
     }
 }

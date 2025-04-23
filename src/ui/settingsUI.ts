@@ -84,7 +84,18 @@ export class SettingsUI {
             }
         );
         container.appendChild(showTooltipItem);
-        
+
+        // 隐藏无操作提示
+        const hideNoActionTooltipItem = this.createToggleItem(
+            this.i18n.hideNoActionTooltip as string || "Hide tooltips for gestures without actions",
+            this.settings.hideNoActionTooltip,
+            (checked) => {
+                this.settings.hideNoActionTooltip = checked;
+                this.settingsChanged(this.settings);
+            }
+        );
+        container.appendChild(hideNoActionTooltipItem);
+
         return container;
     }
     

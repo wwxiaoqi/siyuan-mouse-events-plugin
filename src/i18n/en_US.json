@@ -22,6 +22,8 @@
   "showGestureTrackDescription": "Show the gesture track when dragging the mouse",
   "showGestureTooltip": "Show Gesture Tooltip",
   "showGestureTooltipDescription": "Show action hints when a gesture is recognized",
+  "hideNoActionTooltip": "Hide Tooltips for No-Action Gestures",
+  "hideNoActionTooltipDescription": "Do not display tooltips for gestures without associated actions",
   "resetAllGestures": "Reset All Gestures",
   "gesturesEnabled": "Mouse Gestures Enabled",
   "gesturesDisabled": "Mouse Gestures Disabled",

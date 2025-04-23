@@ -72,6 +72,7 @@ export const DEFAULT_SETTINGS = {
     enableGestures: true,
     showGestureTrack: true,
     showGestureTooltip: true,
+    hideNoActionTooltip: true,
     gestureActions: {
         'left': GESTURE_ACTIONS.SWITCH_LEFT,
         'right': GESTURE_ACTIONS.SWITCH_RIGHT,

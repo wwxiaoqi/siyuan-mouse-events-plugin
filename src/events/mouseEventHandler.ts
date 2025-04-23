@@ -109,31 +109,32 @@ export class MouseEventHandler {
                 // 获取当前方向的配置操作
                 const action = this.settings.gestureActions[this.gestureDirection] || GESTURE_ACTIONS.NO_ACTION;
 
-                // 执行相应操作
-                switch (action) {
-                    case GESTURE_ACTIONS.SCROLL_TOP:
-                        handleScrollClick('up');
-                        break;
-                    case GESTURE_ACTIONS.SCROLL_BOTTOM:
-                        handleScrollClick('down');
-                        break;
-                    case GESTURE_ACTIONS.SWITCH_LEFT:
-                        handleTabSwitch('left', this.i18n);
-                        break;
-                    case GESTURE_ACTIONS.SWITCH_RIGHT:
-                        handleTabSwitch('right', this.i18n);
-                        break;
-                    case GESTURE_ACTIONS.LOCATE_DOC:
-                        const currentDocId = getCurrentDocId();
-                        if (currentDocId) {
-                            locateCurrentDocInTree(currentDocId, this.i18n);
-                        }
-                        break;
-
-                    // 无操作或未知操作不执行任何动作
-                    case GESTURE_ACTIONS.NO_ACTION:
-                    default:
-                        break;
+                // 只有当操作不是无操作时，才执行相应操作
+                if (action !== GESTURE_ACTIONS.NO_ACTION) {
+                    // 执行相应操作
+                    switch (action) {
+                        case GESTURE_ACTIONS.SCROLL_TOP:
+                            handleScrollClick('up');
+                            break;
+                        case GESTURE_ACTIONS.SCROLL_BOTTOM:
+                            handleScrollClick('down');
+                            break;
+                        case GESTURE_ACTIONS.SWITCH_LEFT:
+                            handleTabSwitch('left', this.i18n);
+                            break;
+                        case GESTURE_ACTIONS.SWITCH_RIGHT:
+                            handleTabSwitch('right', this.i18n);
+                            break;
+                        case GESTURE_ACTIONS.LOCATE_DOC:
+                            const currentDocId = getCurrentDocId();
+                            if (currentDocId) {
+                                locateCurrentDocInTree(currentDocId, this.i18n);
+                            }
+                            break;
+                        default:
+                            // 未知操作不执行任何动作
+                            break;
+                    }
                 }
             }
 
@@ -164,31 +165,42 @@ export class MouseEventHandler {
         // 记录轨迹点
         this.gestureTrack.push({ x: event.clientX, y: event.clientY });
 
-        // 更新轨迹显示
-        if (this.settings.showGestureTrack) {
-            this.gestureUI.updateTrackElement(this.gestureTrack, this.isValidGesture);
-        }
-
         // 保存当前手势状态
         const wasValidGesture = this.isValidGesture;
 
         // 判断手势是否有效
         this.evaluateGesture();
 
+        // 检查当前手势对应的操作是否为无操作
+        let hasAssociatedAction = false;
+        if (this.isValidGesture && this.gestureDirection) {
+            const action = this.settings.gestureActions[this.gestureDirection];
+            hasAssociatedAction = Boolean(action) && action !== GESTURE_ACTIONS.NO_ACTION;
+        }
+        
+        // 更新轨迹显示，传入是否有关联操作的信息
+        if (this.settings.showGestureTrack) {
+            this.gestureUI.updateTrackElement(this.gestureTrack, this.isValidGesture && hasAssociatedAction);
+        }
+        
         // 如果手势变为有效，阻止默认右键菜单
         if (!wasValidGesture && this.isValidGesture) {
             event.preventDefault();
         }
 
-        // 更新提示窗口
-        if (this.settings.showGestureTooltip) {
+        // 更新提示窗口 - 如果设置了隐藏无操作提示且当前手势没有关联操作，则不显示提示
+        if (this.settings.showGestureTooltip && !(this.settings.hideNoActionTooltip && !hasAssociatedAction)) {
             this.gestureUI.updateTooltipElement(
-                event.clientX,
-                event.clientY,
+                event.clientX, 
+                event.clientY, 
                 this.isValidGesture,
                 this.gestureDirection,
-                this.i18n
+                this.i18n,
+                hasAssociatedAction
             );
+        } else if (this.settings.hideNoActionTooltip && !hasAssociatedAction) {
+            // 隐藏提示窗口
+            this.gestureUI.hideTooltip();
         }
     }
 

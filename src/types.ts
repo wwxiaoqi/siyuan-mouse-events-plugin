@@ -21,6 +21,7 @@ export interface GestureSettings {
     enableGestures: boolean;
     showGestureTrack: boolean;
     showGestureTooltip: boolean;
+    hideNoActionTooltip: boolean;
     gestureActions: {
         [key: string]: string;
     };
