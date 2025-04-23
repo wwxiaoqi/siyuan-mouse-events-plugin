@@ -91,6 +91,13 @@ If you have any questions, suggestions, or feature requests, please:
 
 ## 📄 Update Logs
 
+### v0.1.4
+Optimization: Gesture/Menu handling mechanism
+
+New: Added 【Close current tab】【Close all tabs】【Close other tabs】 functions
+
+Optimization: Update of the header image, document optimization
+
 ### v0.1.3
 Optimization: Gesture/menu handling mechanism
 
