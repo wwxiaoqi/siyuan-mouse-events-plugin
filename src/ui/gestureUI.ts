@@ -155,7 +155,10 @@ export class GestureUI {
             // 如果没有关联操作，添加无操作标记
             if (actionName && hasAssociatedAction) {
                 // 显示"方向名称: 操作名称"的格式
-                this.tooltipElement.textContent = `${directionName}: ${actionName}`;
+                // this.tooltipElement.textContent = `${directionName}: ${actionName}`;
+                
+                // 仅显示"操作名称"
+                this.tooltipElement.textContent = `${actionName}`;
                 this.tooltipElement.style.color = 'white';
             } else {
                 // 无操作时只显示方向名称
