@@ -17,26 +17,6 @@ export const CONSTANTS = {
     DIRECTION_CHANGE_THRESHOLD: 300
 };
 
-// 手势提示文本
-export const GESTURE_TOOLTIPS: { [key: string]: string } = {
-    'up': 'uptooltipText',
-    'down': 'downtooltipText',
-    'left': 'lefttooltipText',
-    'right': 'righttooltipText',
-    'down-right': 'downRightTooltipText',
-    'left-up': 'leftUpTooltipText',
-    'right-up': 'rightUpTooltipText',
-    'right-down': 'rightDownTooltipText',
-    'up-left': 'upLeftTooltipText',
-    'up-right': 'upRightTooltipText',
-    'down-left': 'downLeftTooltipText',
-    'left-down': 'leftDownTooltipText',
-    'up-down': 'upDownTooltipText',
-    'down-up': 'downUpTooltipText',
-    'left-right': 'leftRightTooltipText',
-    'right-left': 'rightLeftTooltipText'
-};
-
 // 手势动作类型
 export const GESTURE_ACTIONS = {
     'NO_ACTION': 'noAction',

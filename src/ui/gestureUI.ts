@@ -5,7 +5,6 @@
 
 import { IObject } from "siyuan";
 import { GesturePoint, GestureDirection } from '../types';
-import { GESTURE_TOOLTIPS } from '../constants';
 
 export class GestureUI {
     private trackElement: HTMLElement | null = null;
@@ -111,6 +110,7 @@ export class GestureUI {
      * @param gestureDirection 手势方向
      * @param i18n 语言
      * @param hasAssociatedAction 是否有关联操作
+     * @param settingsActions 用户设置的手势操作映射
      */
     public updateTooltipElement(
         x: number, 
@@ -118,7 +118,8 @@ export class GestureUI {
         isValidGesture: boolean, 
         gestureDirection: GestureDirection, 
         i18n: IObject,
-        hasAssociatedAction: boolean = true
+        hasAssociatedAction: boolean = true,
+        settingsActions: {[key: string]: string} = {}
     ): void {
         if (!this.tooltipElement) return;
         
@@ -128,37 +129,42 @@ export class GestureUI {
         
         // 更新内容和显示状态
         if (isValidGesture && gestureDirection) {
-            // 检查是否是复合手势
+            let actionName = '';
+            const actionKey = settingsActions[gestureDirection];
+            
+            // 获取操作名称
+            if (actionKey && actionKey !== 'noAction') {
+                actionName = i18n[actionKey] as string || actionKey;
+            }
+            
+            // 获取方向名称
+            let directionName = '';
             if (gestureDirection.includes('-')) {
                 const directions = gestureDirection.split('-');
                 const dirKey1 = directions[0];
                 const dirKey2 = directions[1];
                 
-                // 在语言包中查找对应的复合手势描述
-                const tooltipKey = `${directions[0]}-${directions[1]}`;
-                
-                // 如果有特定的复合手势提示，使用它；否则组合两个方向的描述
-                if (i18n[tooltipKey]) {
-                    this.tooltipElement.textContent = i18n[tooltipKey];
-                } else {
-                    // 组合两个方向的描述
-                    const dir1Name = i18n[dirKey1] || dirKey1;
-                    const dir2Name = i18n[dirKey2] || dirKey2;
-                    this.tooltipElement.textContent = `${dir1Name} → ${dir2Name}`;
-                }
+                // 组合两个方向的描述
+                const dir1Name = i18n[dirKey1] as string || dirKey1;
+                const dir2Name = i18n[dirKey2] as string || dirKey2;
+                directionName = `${dir1Name} → ${dir2Name}`;
             } else {
-                // 简单手势
-                const tooltipKey = GESTURE_TOOLTIPS[gestureDirection];
-                this.tooltipElement.textContent = tooltipKey ? i18n[tooltipKey] || gestureDirection : gestureDirection;
+                directionName = i18n[gestureDirection] as string || gestureDirection;
             }
 
             // 如果没有关联操作，添加无操作标记
-            if (!hasAssociatedAction) {
-                const noActionText = i18n['noAction'] || 'No Action';
-                this.tooltipElement.textContent += ` (${noActionText})`;
-                this.tooltipElement.style.color = '#ff9800'; // 警告色
+            if (actionName && hasAssociatedAction) {
+                // 显示"方向名称: 操作名称"的格式
+                this.tooltipElement.textContent = `${directionName}: ${actionName}`;
+                this.tooltipElement.style.color = 'white';
             } else {
-                this.tooltipElement.style.color = 'white'; // 恢复默认颜色
+                // 无操作时只显示方向名称
+                this.tooltipElement.textContent = directionName;
+                if (!hasAssociatedAction) {
+                    const noActionText = i18n['noAction'] as string || 'No Action';
+                    this.tooltipElement.textContent += ` (${noActionText})`;
+                    this.tooltipElement.style.color = '#ff9800'; // 警告色
+                }
             }
             
             this.tooltipElement.style.display = 'block';

@@ -196,7 +196,8 @@ export class MouseEventHandler {
                 this.isValidGesture,
                 this.gestureDirection,
                 this.i18n,
-                hasAssociatedAction
+                hasAssociatedAction,
+                this.settings.gestureActions
             );
         } else if (this.settings.hideNoActionTooltip && !hasAssociatedAction) {
             // 隐藏提示窗口
