@@ -120,8 +120,30 @@ export class GestureUI {
         
         // 更新内容和显示状态
         if (isValidGesture && gestureDirection) {
-            const tooltipKey = GESTURE_TOOLTIPS[gestureDirection];
-            this.tooltipElement.textContent = i18n[tooltipKey] || '';
+            // 检查是否是复合手势
+            if (gestureDirection.includes('-')) {
+                const directions = gestureDirection.split('-');
+                const dirKey1 = directions[0];
+                const dirKey2 = directions[1];
+                
+                // 在语言包中查找对应的复合手势描述
+                const tooltipKey = `${directions[0]}-${directions[1]}`;
+                
+                // 如果有特定的复合手势提示，使用它；否则组合两个方向的描述
+                if (i18n[tooltipKey]) {
+                    this.tooltipElement.textContent = i18n[tooltipKey];
+                } else {
+                    // 组合两个方向的描述
+                    const dir1Name = i18n[dirKey1] || dirKey1;
+                    const dir2Name = i18n[dirKey2] || dirKey2;
+                    this.tooltipElement.textContent = `${dir1Name} → ${dir2Name}`;
+                }
+            } else {
+                // 简单手势
+                const tooltipKey = GESTURE_TOOLTIPS[gestureDirection];
+                this.tooltipElement.textContent = tooltipKey ? i18n[tooltipKey] || gestureDirection : gestureDirection;
+            }
+            
             this.tooltipElement.style.display = 'block';
         } else {
             this.tooltipElement.style.display = 'none';
