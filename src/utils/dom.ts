@@ -4,6 +4,75 @@
 import { showMessage, IObject } from "siyuan";
 
 /**
+ * 查找当前激活的内容区域
+ * @returns 当前激活的内容区域元素或null
+ */
+function getActiveContentDiv(): Element | null {
+    // 获取中心布局容器
+    const centerLayout = document.querySelector('.layout__center.fn__flex-1.fn__flex');
+    if (!centerLayout) return null;
+
+    // 获取分割线两侧的内容区域
+    const contentDivs = centerLayout.querySelectorAll('.fn__flex-1.fn__flex');
+
+    // 查找当前激活的窗口
+    let activeContentDiv: Element | null = null;
+    contentDivs.forEach(div => {
+        if (div.querySelector('.layout__wnd--active')) {
+            activeContentDiv = div;
+        }
+    });
+
+    return activeContentDiv;
+}
+
+/**
+ * 获取当前激活的标签页及其索引
+ * @param contentDiv 内容区域元素
+ * @returns 包含激活标签页和索引的对象
+ */
+function getActiveTab(contentDiv: Element): { tab: Element | null, index: number } {
+    // 获取所有标签页
+    const tabs = contentDiv.querySelectorAll('.layout-tab-bar li[data-type="tab-header"]');
+
+    // 查找当前激活的标签页索引
+    let activeTabIndex = -1;
+    let activeTab: Element | null = null;
+
+    tabs.forEach((tab, index) => {
+        if (tab.classList.contains('item--focus')) {
+            activeTabIndex = index;
+            activeTab = tab;
+        }
+    });
+
+    return { tab: activeTab, index: activeTabIndex };
+}
+
+/**
+ * 获取所有标签页
+ * @param contentDiv 内容区域元素
+ * @returns 标签页NodeList
+ */
+function getAllTabs(contentDiv: Element): NodeListOf<Element> {
+    return contentDiv.querySelectorAll('.layout-tab-bar li[data-type="tab-header"]');
+}
+
+/**
+ * 关闭单个标签页
+ * @param tab 要关闭的标签页元素
+ * @returns 是否成功关闭
+ */
+function closeTab(tab: Element): boolean {
+    const closeButton = tab.querySelector('.item__close') as HTMLElement;
+    if (closeButton) {
+        closeButton.click();
+        return true;
+    }
+    return false;
+}
+
+/**
  * 滚动到顶部
  */
 export function scrollToTop(): void {
@@ -40,47 +109,25 @@ export function handleScrollClick(direction: 'up' | 'down'): void {
             : '.protyle-scroll__down.ariaLabel';
     };
 
-    // 获取中心布局容器
-    const centerLayout = document.querySelector('.layout__center.fn__flex-1.fn__flex');
-    if (!centerLayout) return;
+    const activeContentDiv = getActiveContentDiv();
+    if (!activeContentDiv) return;
 
-    // 获取分割线两侧的内容区域
-    const contentDivs = centerLayout.querySelectorAll('.fn__flex-1.fn__flex');
+    // 获取当前激活的标签页信息
+    const { index: activeTabIndex } = getActiveTab(activeContentDiv);
 
-    // 查找当前激活的窗口
-    let activeContentDiv = null;
-    contentDivs.forEach(div => {
-        if (div.querySelector('.layout__wnd--active')) {
-            activeContentDiv = div;
-        }
-    });
+    // 获取所有编辑器容器
+    const protyleContainers = activeContentDiv.querySelectorAll('.protyle');
 
-    if (activeContentDiv) {
-        // 获取激活窗口中的所有标签页
-        const tabs = activeContentDiv.querySelectorAll('.layout-tab-bar li[data-type="tab-header"]');
-        
-        // 查找当前激活的标签页索引
-        let activeTabIndex = -1;
-        tabs.forEach((tab, index) => {
-            if (tab.classList.contains('item--focus')) {
-                activeTabIndex = index;
-            }
-        });
+    // 如果找到了激活的标签页，则在对应的容器中查找并点击目标元素
+    if (activeTabIndex !== -1 && protyleContainers.length > activeTabIndex) {
+        // 获取当前激活标签页对应的编辑器容器
+        const targetContainer = protyleContainers[activeTabIndex];
+        // 在容器中查找滚动按钮
+        const targetElement = targetContainer.querySelector(getScrollSelector(direction)) as HTMLElement;
 
-        // 获取所有编辑器容器
-        const protyleContainers = activeContentDiv.querySelectorAll('.protyle');
-        
-        // 如果找到了激活的标签页，则在对应的容器中查找并点击目标元素
-        if (activeTabIndex !== -1 && protyleContainers.length > activeTabIndex) {
-            // 获取当前激活标签页对应的编辑器容器
-            const targetContainer = protyleContainers[activeTabIndex];
-            // 在容器中查找滚动按钮
-            const targetElement = targetContainer.querySelector(getScrollSelector(direction)) as HTMLElement;
-            
-            // 如果找到了目标元素，则触发点击事件
-            if (targetElement) {
-                targetElement.click();
-            }
+        // 如果找到了目标元素，则触发点击事件
+        if (targetElement) {
+            targetElement.click();
         }
     }
 }
@@ -164,37 +211,24 @@ export function switchTabRight(i18n: IObject): void {
  * 根据方向切换标签页（左 left、右 right）
  */
 export function handleTabSwitch(direction: 'left' | 'right', i18n: IObject): void {
-    // 获取中心布局容器
-    const centerLayout = document.querySelector('.layout__center.fn__flex-1.fn__flex');
-    if (!centerLayout) return;
+    const activeContentDiv = getActiveContentDiv();
+    if (!activeContentDiv) return;
 
-    // 获取分割线两侧的内容区域
-    const contentDivs = centerLayout.querySelectorAll('.fn__flex-1.fn__flex');
+    // 在激活窗口中查找当前激活的标签页
+    const { tab: activeTab } = getActiveTab(activeContentDiv);
 
-    // 查找当前激活的窗口
-    let activeContentDiv = null;
-    contentDivs.forEach(div => {
-        if (div.querySelector('.layout__wnd--active')) {
-            activeContentDiv = div;
-        }
-    });
+    if (activeTab) {
+        // 根据方向获取目标标签页
+        const targetTab = direction === 'left'
+            ? activeTab.previousElementSibling
+            : activeTab.nextElementSibling;
 
-    if (activeContentDiv) {
-        // 在激活窗口中查找当前激活的标签页
-        const activeTab = activeContentDiv.querySelector('.layout-tab-bar .item--focus');
-        if (activeTab) {
-            // 根据方向获取目标标签页
-            const targetTab = direction === 'left' 
-                ? activeTab.previousElementSibling
-                : activeTab.nextElementSibling;
-
-            // 如果目标标签页存在且是有效的标签页，则触发点击
-            if (targetTab && targetTab.classList.contains('item')) {
-                (targetTab as HTMLElement).click();
-            } else {
-                // 显示提示消息
-                showMessage(i18n[direction === 'left' ? "switchTabLeft" : "switchTabRight"]);
-            }
+        // 如果目标标签页存在且是有效的标签页，则触发点击
+        if (targetTab && targetTab.classList.contains('item')) {
+            (targetTab as HTMLElement).click();
+        } else {
+            // 显示提示消息
+            showMessage(i18n[direction === 'left' ? "switchTabLeft" : "switchTabRight"]);
         }
     }
 }
@@ -203,35 +237,14 @@ export function handleTabSwitch(direction: 'left' | 'right', i18n: IObject): voi
  * 关闭当前标签页
  */
 export function closeCurrentTab(): void {
-    // 获取中心布局容器
-    const centerLayout = document.querySelector('.layout__center.fn__flex-1.fn__flex');
-    if (!centerLayout) return;
+    const activeContentDiv = getActiveContentDiv();
+    if (!activeContentDiv) return;
 
-    // 获取分割线两侧的内容区域
-    const contentDivs = centerLayout.querySelectorAll('.fn__flex-1.fn__flex');
+    // 获取激活窗口中的当前激活的标签页
+    const { tab: activeTab } = getActiveTab(activeContentDiv);
 
-    // 查找当前激活的窗口
-    let activeContentDiv = null;
-    contentDivs.forEach(div => {
-        if (div.querySelector('.layout__wnd--active')) {
-            activeContentDiv = div;
-        }
-    });
-
-    if (activeContentDiv) {
-        // 获取激活窗口中的当前激活的标签页
-        const activeTab = activeContentDiv.querySelector('.layout-tab-bar li.item--focus') as HTMLElement;
-        
-        if (activeTab) {
-            // 获取关闭按钮
-            const closeButton = activeTab.querySelector('.item__close') as HTMLElement;
-            
-            // 如果找到了关闭按钮，则触发点击事件
-            if (closeButton) {
-                closeButton.click();
-                return;
-            }
-        }
+    if (activeTab) {
+        closeTab(activeTab);
     }
 }
 
@@ -239,50 +252,33 @@ export function closeCurrentTab(): void {
  * 关闭所有标签页
  */
 export function closeAllTabs(): void {
-    // 获取中心布局容器
-    const centerLayout = document.querySelector('.layout__center.fn__flex-1.fn__flex');
-    if (!centerLayout) return;
+    const activeContentDiv = getActiveContentDiv();
+    if (!activeContentDiv) return;
 
-    // 获取分割线两侧的内容区域
-    const contentDivs = centerLayout.querySelectorAll('.fn__flex-1.fn__flex');
+    // 获取标签栏的更多菜单按钮
+    const moreButton = activeContentDiv.querySelector('.layout-tab-bar .item--close-all') as HTMLElement;
 
-    // 查找当前激活的窗口
-    let activeContentDiv = null;
-    contentDivs.forEach(div => {
-        if (div.querySelector('.layout__wnd--active')) {
-            activeContentDiv = div;
-        }
-    });
+    if (moreButton) {
+        // 点击更多菜单按钮
+        moreButton.click();
 
-    if (activeContentDiv) {
-        // 获取标签栏的更多菜单按钮
-        const moreButton = activeContentDiv.querySelector('.layout-tab-bar .item--close-all') as HTMLElement;
-        
-        if (moreButton) {
-            // 点击更多菜单按钮
-            moreButton.click();
-            
-            // 等待菜单出现
-            setTimeout(() => {
-                // 查找"全部关闭"菜单项
-                const closeAllMenuItem = document.querySelector('.b3-menu__item[data-type="closeAll"]') as HTMLElement;
-                if (closeAllMenuItem) {
-                    closeAllMenuItem.click();
-                }
-            }, 100);
-        } else {
-            // 如果没有找到更多菜单按钮，则逐个关闭所有标签页
-            const tabs = activeContentDiv.querySelectorAll('.layout-tab-bar li[data-type="tab-header"]');
-            
-            // 从后往前关闭，避免索引变化的问题
-            for (let i = tabs.length - 1; i >= 0; i--) {
-                const closeButton = tabs[i].querySelector('.item__close') as HTMLElement;
-                if (closeButton) {
-                    closeButton.click();
-                    // 稍微延迟，让上一个关闭操作完成
-                    new Promise(resolve => setTimeout(resolve, 10));
-                }
+        // 等待菜单出现
+        setTimeout(() => {
+            // 查找"全部关闭"菜单项
+            const closeAllMenuItem = document.querySelector('.b3-menu__item[data-type="closeAll"]') as HTMLElement;
+            if (closeAllMenuItem) {
+                closeAllMenuItem.click();
             }
+        }, 100);
+    } else {
+        // 如果没有找到更多菜单按钮，则逐个关闭所有标签页
+        const tabs = getAllTabs(activeContentDiv);
+
+        // 从后往前关闭，避免索引变化的问题
+        for (let i = tabs.length - 1; i >= 0; i--) {
+            closeTab(tabs[i]);
+            // 稍微延迟，让上一个关闭操作完成
+            new Promise(resolve => setTimeout(resolve, 10));
         }
     }
 }
@@ -291,67 +287,40 @@ export function closeAllTabs(): void {
  * 关闭其他标签页
  */
 export function closeOtherTabs(): void {
-    // 获取中心布局容器
-    const centerLayout = document.querySelector('.layout__center.fn__flex-1.fn__flex');
-    if (!centerLayout) return;
+    const activeContentDiv = getActiveContentDiv();
+    if (!activeContentDiv) return;
 
-    // 获取分割线两侧的内容区域
-    const contentDivs = centerLayout.querySelectorAll('.fn__flex-1.fn__flex');
+    // 获取当前激活的标签页信息
+    const { tab: activeTab, index: activeTabIndex } = getActiveTab(activeContentDiv);
 
-    // 查找当前激活的窗口
-    let activeContentDiv = null;
-    contentDivs.forEach(div => {
-        if (div.querySelector('.layout__wnd--active')) {
-            activeContentDiv = div;
-        }
-    });
-
-    if (activeContentDiv) {
-        // 获取所有标签页
-        const tabs = activeContentDiv.querySelectorAll('.layout-tab-bar li[data-type="tab-header"]');
-        
-        // 查找当前激活的标签页索引
-        let activeTabIndex = -1;
-        tabs.forEach((tab, index) => {
-            if (tab.classList.contains('item--focus')) {
-                activeTabIndex = index;
-            }
+    if (activeTabIndex !== -1 && activeTab) {
+        // 模拟右键点击激活上下文菜单
+        const rightClickEvent = new MouseEvent('contextmenu', {
+            bubbles: true,
+            cancelable: true,
+            view: window,
+            button: 2,
+            buttons: 2
         });
-        
-        if (activeTabIndex !== -1) {
-            // 先找到当前标签页并右键点击它
-            const activeTab = tabs[activeTabIndex] as HTMLElement;
-            
-            // 模拟右键点击激活上下文菜单
-            const rightClickEvent = new MouseEvent('contextmenu', {
-                bubbles: true,
-                cancelable: true,
-                view: window,
-                button: 2,
-                buttons: 2
-            });
-            activeTab.dispatchEvent(rightClickEvent);
-            
-            // 等待上下文菜单出现
-            setTimeout(() => {
-                // 查找"关闭其他标签页"菜单项
-                const closeOthersMenuItem = document.querySelector('.b3-menu__item[data-type="closeOthers"]') as HTMLElement;
-                if (closeOthersMenuItem) {
-                    closeOthersMenuItem.click();
-                } else {
-                    // 如果没有找到菜单项，则手动关闭其他标签页
-                    for (let i = tabs.length - 1; i >= 0; i--) {
-                        if (i !== activeTabIndex) {
-                            const closeButton = tabs[i].querySelector('.item__close') as HTMLElement;
-                            if (closeButton) {
-                                closeButton.click();
-                                // 稍微延迟，让上一个关闭操作完成
-                                new Promise(resolve => setTimeout(resolve, 10));
-                            }
-                        }
+        (activeTab as HTMLElement).dispatchEvent(rightClickEvent);
+
+        // 等待上下文菜单出现
+        setTimeout(() => {
+            // 查找"关闭其他标签页"菜单项
+            const closeOthersMenuItem = document.querySelector('.b3-menu__item[data-type="closeOthers"]') as HTMLElement;
+            if (closeOthersMenuItem) {
+                closeOthersMenuItem.click();
+            } else {
+                // 如果没有找到菜单项，则手动关闭其他标签页
+                const tabs = getAllTabs(activeContentDiv);
+                for (let i = tabs.length - 1; i >= 0; i--) {
+                    if (i !== activeTabIndex) {
+                        closeTab(tabs[i]);
+                        // 稍微延迟，让上一个关闭操作完成
+                        new Promise(resolve => setTimeout(resolve, 10));
                     }
                 }
-            }, 100);
-        }
+            }
+        }, 100);
     }
 }
