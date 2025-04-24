@@ -2,7 +2,7 @@
   "name": "mouse-events-plugin",
   "author": "wwxiaoqi",
   "url": "https://github.com/wwxiaoqi/siyuan-mouse-events-plugin",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "minAppVersion": "3.1.27",
   "backends": [
     "windows",

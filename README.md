@@ -91,6 +91,13 @@ If you have any questions, suggestions, or feature requests, please:
 
 ## 📄 Update Logs
 
+### v0.1.5
+Added: Added [Debug Mode] menu (activation method: click [Basic Settings] in the menu 10 times consecutively)
+
+Added: Added direction judgment function in debug mode
+
+Optimized: Rewrote gesture recognition logic
+
 ### v0.1.4
 Optimization: Gesture/Menu handling mechanism
 
