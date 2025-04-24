@@ -254,32 +254,51 @@ export class MouseEventHandler {
     private evaluateGesture(): void {
         if (this.gestureTrack.length < 2) return;
 
-        // 计算手势的总长度
+        // 计算手势的总长度和距离
         let totalLength = 0;
+        const startPoint = this.gestureTrack[0];
+        const endPoint = this.gestureTrack[this.gestureTrack.length - 1];
+        const directDistance = Math.sqrt(
+            Math.pow(endPoint.x - startPoint.x, 2) + 
+            Math.pow(endPoint.y - startPoint.y, 2)
+        );
+
+        // 计算总轨迹长度
         for (let i = 1; i < this.gestureTrack.length; i++) {
             const dx = this.gestureTrack[i].x - this.gestureTrack[i - 1].x;
             const dy = this.gestureTrack[i].y - this.gestureTrack[i - 1].y;
             totalLength += Math.sqrt(dx * dx + dy * dy);
         }
 
-        // 如果手势太短，认为无效
+        // 计算直线度 - 越接近1表示越直，越接近0表示越弯曲
+        const straightness = directDistance / totalLength;
+
+        // 如果轨迹总长度太短，认为无效
         if (totalLength < CONSTANTS.MIN_GESTURE_LENGTH) {
             this.isValidGesture = false;
             return;
         }
 
-        // 分析手势轨迹，检测复合手势
-        this.analyzeGestureTrack();
+        // 分析手势轨迹，检测方向
+        this.analyzeGestureTrack(straightness);
     }
 
     /**
      * 分析手势轨迹，检测方向变化
+     * @param straightness 轨迹的直线度，用于调整识别灵敏度
      */
-    private analyzeGestureTrack(): void {
+    private analyzeGestureTrack(straightness: number = 0.8): void {
         if (this.gestureTrack.length < 2) return;
 
         // 将轨迹分成若干段，每段识别一个主方向
-        const segments = this.segmentTrack();
+        const segments = this.segmentTrack(straightness);
+
+        // 如果没有识别出任何方向，认为手势无效
+        if (segments.length === 0) {
+            this.gestureDirection = '';
+            this.isValidGesture = false;
+            return;
+        }
 
         // 如果只有一个段，则为简单手势
         if (segments.length === 1) {
@@ -290,20 +309,183 @@ export class MouseEventHandler {
         }
 
         // 如果有两个段，则为复合手势
-        if (segments.length === 2) {
-            // 组合两个方向段为复合手势
+        if (segments.length >= 2) {
+            // 组合两个方向段为复合手势（只使用前两个段）
             const combinedDirection = `${segments[0]}-${segments[1]}` as GestureDirection;
             this.gestureDirection = combinedDirection;
             this.isValidGesture = true;
-            return;
+        }
+    }
+
+    /**
+     * 将轨迹分段，每段识别一个主方向
+     * @param straightness 轨迹的直线度，用于调整识别灵敏度
+     * @returns 主方向数组
+     */
+    private segmentTrack(straightness: number = 0.8): string[] {
+        const segments: string[] = [];
+        
+        // 如果轨迹点太少，计算整体方向
+        if (this.gestureTrack.length < 3) {
+            const startPoint = this.gestureTrack[0];
+            const endPoint = this.gestureTrack[this.gestureTrack.length - 1];
+            const { deltaX, deltaY } = this.calculateDelta(startPoint, endPoint);
+            const direction = this.getDirection(deltaX, deltaY);
+            if (direction) segments.push(direction);
+            return segments;
         }
 
-        // 对于更复杂的情况，只使用前两个显著方向段
-        if (segments.length > 2) {
-            const combinedDirection = `${segments[0]}-${segments[1]}` as GestureDirection;
-            this.gestureDirection = combinedDirection;
-            this.isValidGesture = true;
+        // 使用贝塞尔曲线拟合来处理曲线手势
+        const smoothedPoints = this.smoothTrajectory(this.gestureTrack);
+        
+        // 查找主要的转折点
+        const inflectionPoints = this.findInflectionPoints(smoothedPoints, straightness);
+        
+        // 处理找到的转折点，提取方向
+        if (inflectionPoints.length > 0) {
+            let prevDirection = '';
+            let startIdx = 0;
+            
+            // 遍历所有转折点
+            for (let i = 0; i < inflectionPoints.length; i++) {
+                const inflectionIdx = inflectionPoints[i];
+                
+                // 计算当前段的方向
+                if (inflectionIdx - startIdx > 2) { // 确保段长足够
+                    const startPoint = smoothedPoints[startIdx];
+                    const endPoint = smoothedPoints[inflectionIdx];
+                    const { deltaX, deltaY } = this.calculateDelta(startPoint, endPoint);
+                    const direction = this.getDirection(deltaX, deltaY);
+                    
+                    // 如果方向有效且与前一个不同，添加到结果中
+                    if (direction && direction !== prevDirection) {
+                        segments.push(direction);
+                        prevDirection = direction;
+                        
+                        // 最多识别两个方向
+                        if (segments.length >= 2) break;
+                    }
+                }
+                
+                startIdx = inflectionIdx;
+            }
+            
+            // 处理最后一段（如果需要且还没有识别出两个方向）
+            if (segments.length < 2 && startIdx < smoothedPoints.length - 2) {
+                const startPoint = smoothedPoints[startIdx];
+                const endPoint = smoothedPoints[smoothedPoints.length - 1];
+                const { deltaX, deltaY } = this.calculateDelta(startPoint, endPoint);
+                const direction = this.getDirection(deltaX, deltaY);
+                
+                if (direction && direction !== prevDirection) {
+                    segments.push(direction);
+                }
+            }
         }
+        
+        // 如果没有找到有效段，分析整体方向
+        if (segments.length === 0) {
+            const startPoint = this.gestureTrack[0];
+            const endPoint = this.gestureTrack[this.gestureTrack.length - 1];
+            const { deltaX, deltaY } = this.calculateDelta(startPoint, endPoint);
+            const direction = this.getDirection(deltaX, deltaY);
+            if (direction) segments.push(direction);
+        }
+        
+        return segments;
+    }
+    
+    /**
+     * 查找轨迹中的主要转折点
+     * @param points 平滑后的轨迹点
+     * @param straightness 轨迹的直线度，用于调整识别灵敏度
+     * @returns 转折点索引数组
+     */
+    private findInflectionPoints(points: GesturePoint[], straightness: number): number[] {
+        const result: number[] = [];
+        if (points.length < 5) return result;
+        
+        // 根据轨迹直线度调整角度阈值 - 越曲折，阈值越低
+        // 对于直线度高的轨迹(接近1)需要较大的角度变化才算转折
+        // 对于曲线(直线度低)则允许较小的角度变化
+        const baseAngleThreshold = 30; // 基础角度阈值
+        const angleThreshold = baseAngleThreshold + (60 * straightness); 
+        
+        let lastInflectionIdx = 0;
+        const minSegmentLength = Math.max(3, Math.floor(points.length * 0.05)); // 最小段长度
+        
+        // 使用滑动窗口检测转折点
+        for (let i = 2; i < points.length - 2; i++) {
+            // 计算前段方向向量
+            const prevVectorX = points[i].x - points[i-2].x;
+            const prevVectorY = points[i].y - points[i-2].y;
+            
+            // 计算后段方向向量
+            const nextVectorX = points[i+2].x - points[i].x;
+            const nextVectorY = points[i+2].y - points[i].y;
+            
+            // 计算向量夹角（弧度）
+            const dot = prevVectorX * nextVectorX + prevVectorY * nextVectorY;
+            const prevMag = Math.sqrt(prevVectorX * prevVectorX + prevVectorY * prevVectorY);
+            const nextMag = Math.sqrt(nextVectorX * nextVectorX + nextVectorY * nextVectorY);
+            
+            // 避免除以零
+            if (prevMag < 0.0001 || nextMag < 0.0001) continue;
+            
+            // 计算角度（角度制）
+            const cosAngle = Math.max(-1, Math.min(1, dot / (prevMag * nextMag)));
+            const angle = Math.acos(cosAngle) * (180 / Math.PI);
+            
+            // 方向变化超过阈值，且与上一个转折点距离足够
+            if (angle > angleThreshold && (i - lastInflectionIdx) >= minSegmentLength) {
+                result.push(i);
+                lastInflectionIdx = i;
+            }
+        }
+        
+        return result;
+    }
+    
+    /**
+     * 平滑轨迹点，减少噪声影响
+     * @param points 原始轨迹点
+     * @returns 平滑后的轨迹点
+     */
+    private smoothTrajectory(points: GesturePoint[]): GesturePoint[] {
+        if (points.length <= 5) return points;
+        
+        const result: GesturePoint[] = [];
+        
+        // 添加起点
+        result.push(points[0]);
+        
+        // 使用移动平均平滑中间点
+        const windowSize = Math.min(5, Math.floor(points.length / 10) + 2);
+        const halfWindow = Math.floor(windowSize / 2);
+        
+        for (let i = 1; i < points.length - 1; i++) {
+            let sumX = 0;
+            let sumY = 0;
+            let count = 0;
+            
+            // 计算窗口内点的平均位置
+            for (let j = Math.max(0, i - halfWindow); j <= Math.min(points.length - 1, i + halfWindow); j++) {
+                sumX += points[j].x;
+                sumY += points[j].y;
+                count++;
+            }
+            
+            // 添加平滑后的点
+            result.push({
+                x: sumX / count,
+                y: sumY / count
+            });
+        }
+        
+        // 添加终点
+        result.push(points[points.length - 1]);
+        
+        return result;
     }
 
     /**
@@ -320,110 +502,6 @@ export class MouseEventHandler {
     }
 
     /**
-     * 将轨迹分段，每段识别一个主方向
-     * @returns 主方向数组
-     */
-    private segmentTrack(): string[] {
-        const segments: string[] = [];
-
-        // 如果轨迹点太少，无法分段
-        if (this.gestureTrack.length < 3) {
-            // 计算起点和终点
-            const startPoint = this.gestureTrack[0];
-            const endPoint = this.gestureTrack[this.gestureTrack.length - 1];
-
-            // 计算垂直和水平位移
-            const { deltaX, deltaY } = this.calculateDelta(startPoint, endPoint);
-
-            // 添加简单方向
-            segments.push(this.getDirection(deltaX, deltaY));
-            return segments;
-        }
-
-        // 根据角度变化划分段
-        let currentDirection = '';
-        let segmentStart = 0;
-
-        for (let i = 2; i < this.gestureTrack.length; i++) {
-            // 计算前两点之间的角度
-            const prevAngle = Math.atan2(
-                this.gestureTrack[i - 1].y - this.gestureTrack[i - 2].y,
-                this.gestureTrack[i - 1].x - this.gestureTrack[i - 2].x
-            );
-
-            // 计算当前两点之间的角度
-            const currentAngle = Math.atan2(
-                this.gestureTrack[i].y - this.gestureTrack[i - 1].y,
-                this.gestureTrack[i].x - this.gestureTrack[i - 1].x
-            );
-
-            // 计算角度差（转换为度）
-            let angleDiff = Math.abs(currentAngle - prevAngle) * (180 / Math.PI);
-
-            // 调整角度差到 0-180 范围
-            if (angleDiff > 180) angleDiff = 360 - angleDiff;
-
-            // 如果角度差大于阈值，认为是方向变化
-            if (angleDiff > 60) {
-                // 计算当前段的主方向
-                const startPoint = this.gestureTrack[segmentStart];
-                const endPoint = this.gestureTrack[i - 1];
-
-                // 计算垂直和水平位移
-                const { deltaX, deltaY } = this.calculateDelta(startPoint, endPoint);
-
-                // 获取主方向
-                const direction = this.getDirection(deltaX, deltaY);
-
-                // 如果方向有效且与上一段不同，添加到段列表
-                if (direction && direction !== currentDirection) {
-                    segments.push(direction);
-                    currentDirection = direction;
-
-                    // 最多识别两个方向变化
-                    if (segments.length >= 2) break;
-
-                    // 更新段起点
-                    segmentStart = i - 1;
-                }
-            }
-        }
-
-        // 处理最后一段
-        if (segmentStart < this.gestureTrack.length - 1) {
-            const startPoint = this.gestureTrack[segmentStart];
-            const endPoint = this.gestureTrack[this.gestureTrack.length - 1];
-
-            // 计算垂直和水平位移
-            const { deltaX, deltaY } = this.calculateDelta(startPoint, endPoint);
-
-            // 获取主方向
-            const direction = this.getDirection(deltaX, deltaY);
-
-            // 如果方向有效且与上一段不同，添加到段列表
-            if (direction && direction !== currentDirection) {
-                segments.push(direction);
-            }
-        }
-
-        // 如果没有找到有效段，尝试整体方向
-        if (segments.length === 0) {
-            const startPoint = this.gestureTrack[0];
-            const endPoint = this.gestureTrack[this.gestureTrack.length - 1];
-
-            // 计算垂直和水平位移
-            const { deltaX, deltaY } = this.calculateDelta(startPoint, endPoint);
-
-            // 获取主方向
-            const direction = this.getDirection(deltaX, deltaY);
-            if (direction) {
-                segments.push(direction);
-            }
-        }
-        return segments;
-    }
-
-    /**
      * 根据位移获取主方向
      * @param deltaX 水平位移
      * @param deltaY 垂直位移
@@ -434,41 +512,71 @@ export class MouseEventHandler {
         const displacement = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
 
         // 如果位移太小，认为没有方向
-        if (displacement < CONSTANTS.MIN_GESTURE_LENGTH) {
+        if (displacement < CONSTANTS.MIN_GESTURE_LENGTH * 0.7) {
             return '';
         }
 
-        // 判断是否是垂直手势（垂直分量大于水平分量的2倍）
-        if (Math.abs(deltaY) > Math.abs(deltaX) * 2) {
-            if (deltaY > CONSTANTS.SCROLL_THRESHOLD) {
-                return 'up';
-            } else if (deltaY < -CONSTANTS.SCROLL_THRESHOLD) {
-                return 'down';
-            }
-        }
-        // 判断是否是水平手势（水平分量大于垂直分量的2倍）
-        else if (Math.abs(deltaX) > Math.abs(deltaY) * 2) {
-            if (deltaX > CONSTANTS.HORIZONTAL_THRESHOLD) {
-                return 'left';
-            } else if (deltaX < -CONSTANTS.HORIZONTAL_THRESHOLD) {
-                return 'right';
-            }
-        }
-        // 对角线手势
-        else {
-            // 基于角度判断对角线方向
-            const angle = Math.atan2(deltaY, deltaX) * (180 / Math.PI);
-
-            if (angle >= 45 && angle < 135) {
-                return 'up'; // 向上
-            } else if (angle >= -45 && angle < 45) {
-                return 'left'; // 向左
-            } else if (angle >= -135 && angle < -45) {
-                return 'down'; // 向下
+        // 计算角度（弧度）
+        const angle = Math.atan2(deltaY, deltaX);
+        const degrees = angle * (180 / Math.PI);
+        
+        // 使用连续的方向判定，不是离散的区域划分
+        // 这样能更好地处理接近边界的情况
+        
+        // 将角度规范化到 -180 到 180 度范围内
+        let normDegrees = degrees;
+        while (normDegrees < -180) normDegrees += 360;
+        while (normDegrees > 180) normDegrees -= 360;
+        
+        // 8方向判定，每个方向45度区间
+        // 对接近边界的情况做特殊处理
+        if (normDegrees >= -22.5 && normDegrees < 22.5) {
+            return 'left';      // 向左
+        } else if (normDegrees >= 22.5 && normDegrees < 67.5) {
+            // 对于接近边界的曲线手势，判断哪个分量更明显
+            if (Math.abs(deltaY) > Math.abs(deltaX) * 1.5) {
+                return 'up';    // 垂直分量更明显，判为向上
+            } else if (Math.abs(deltaX) > Math.abs(deltaY) * 1.5) {
+                return 'left';  // 水平分量更明显，判为向左
             } else {
-                return 'right'; // 向右
+                return 'up-left';   // 两者差不多，判为左上
+            }
+        } else if (normDegrees >= 67.5 && normDegrees < 112.5) {
+            return 'up';        // 向上
+        } else if (normDegrees >= 112.5 && normDegrees < 157.5) {
+            // 同理处理接近边界情况
+            if (Math.abs(deltaY) > Math.abs(deltaX) * 1.5) {
+                return 'up';    // 垂直分量更明显
+            } else if (Math.abs(deltaX) > Math.abs(deltaY) * 1.5) {
+                return 'right'; // 水平分量更明显
+            } else {
+                return 'up-right';  // 两者差不多
+            }
+        } else if ((normDegrees >= 157.5 && normDegrees <= 180) || (normDegrees >= -180 && normDegrees < -157.5)) {
+            return 'right';     // 向右
+        } else if (normDegrees >= -157.5 && normDegrees < -112.5) {
+            // 同理处理接近边界情况
+            if (Math.abs(deltaY) > Math.abs(deltaX) * 1.5) {
+                return 'down';  // 垂直分量更明显
+            } else if (Math.abs(deltaX) > Math.abs(deltaY) * 1.5) {
+                return 'right'; // 水平分量更明显
+            } else {
+                return 'down-right'; // 两者差不多
+            }
+        } else if (normDegrees >= -112.5 && normDegrees < -67.5) {
+            return 'down';      // 向下
+        } else if (normDegrees >= -67.5 && normDegrees < -22.5) {
+            // 同理处理接近边界情况
+            if (Math.abs(deltaY) > Math.abs(deltaX) * 1.5) {
+                return 'down';  // 垂直分量更明显
+            } else if (Math.abs(deltaX) > Math.abs(deltaY) * 1.5) {
+                return 'left';  // 水平分量更明显
+            } else {
+                return 'down-left'; // 两者差不多
             }
         }
+        
+        // 默认情况下，返回空字符串
         return '';
     }
 }
