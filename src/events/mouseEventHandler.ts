@@ -207,7 +207,8 @@ export class MouseEventHandler {
                 this.gestureDirection,
                 this.i18n,
                 hasAssociatedAction,
-                this.settings.gestureActions
+                this.settings.gestureActions,
+                this.settings.showDirectionInTooltip
             );
         } else if (this.settings.hideNoActionTooltip && !hasAssociatedAction) {
             // 隐藏提示窗口

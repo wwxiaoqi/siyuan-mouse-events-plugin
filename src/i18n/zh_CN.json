@@ -29,6 +29,10 @@
   "gesturesDisabled": "已禁用鼠标手势",
   "advancedSettings": "高级设置",
   
+  "debugMode": "调试模式",
+  "showDirectionInTooltip": "显示方向判断",
+  "closeDebugMode": "关闭调试模式",
+  
   "noAction": "无操作",
   "scrollTop": "滚动到顶部",
   "scrollBottom": "滚动到底部",

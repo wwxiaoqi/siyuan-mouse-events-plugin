@@ -12,11 +12,13 @@ export class SettingsUI {
     private i18n: IObject;
     private settings: GestureSettings;
     private settingsChanged: (settings: GestureSettings) => void;
+    private debugClickCounter: number = 0;
     
     constructor(i18n: IObject, settings: GestureSettings, settingsChanged: (settings: GestureSettings) => void) {
         this.i18n = i18n;
         this.settings = settings;
         this.settingsChanged = settingsChanged;
+        this.debugClickCounter = 0;
     }
     
     /**
@@ -36,6 +38,12 @@ export class SettingsUI {
         const actionSettingsContainer = this.createActionSettings();
         settingsContainer.appendChild(actionSettingsContainer);
         
+        // 如果已经开启了调试模式，显示调试设置
+        if (this.settings.debugMode) {
+            const debugSettingsContainer = this.createDebugSettings();
+            settingsContainer.appendChild(debugSettingsContainer);
+        }
+        
         return settingsContainer;
     }
     
@@ -50,6 +58,24 @@ export class SettingsUI {
         const title = document.createElement('h2');
         title.textContent = this.i18n.basicSettings as string;
         title.className = 'config-title';
+
+        // 添加点击事件监听
+        title.addEventListener('click', () => {
+            this.debugClickCounter++;
+            if (this.debugClickCounter === 10) {
+                this.settings.debugMode = true;
+                this.settingsChanged(this.settings);
+                
+                // 获取父容器
+                const parent = container.parentElement;
+                if (parent) {
+                    // 创建并添加调试设置
+                    const debugSettings = this.createDebugSettings();
+                    parent.appendChild(debugSettings);
+                }
+            }
+        });
+
         container.appendChild(title);
         
         // 启用鼠标手势
@@ -97,6 +123,55 @@ export class SettingsUI {
         container.appendChild(hideNoActionTooltipItem);
 
         return container;
+    }
+    
+    /**
+     * 创建调试设置部分
+     */
+    private createDebugSettings(): HTMLElement {
+        const debugContainer = document.createElement('div');
+        debugContainer.className = 'config-section debug-section';
+        
+        // 标题容器，包含标题和关闭按钮
+        const titleContainer = document.createElement('div');
+        titleContainer.className = 'debug-title-container';
+        
+        // 调试模式标题
+        const debugTitle = document.createElement('h2');
+        debugTitle.textContent = this.i18n.debugMode as string || "Debug Mode";
+        debugTitle.className = 'config-title';
+        titleContainer.appendChild(debugTitle);
+        
+        // 关闭按钮
+        const closeButton = document.createElement('button');
+        closeButton.textContent = "×";
+        closeButton.className = 'debug-close-btn';
+        closeButton.title = this.i18n.closeDebugMode as string || "Close Debug Mode";
+        closeButton.addEventListener('click', () => {
+            this.settings.debugMode = false;
+            this.settingsChanged(this.settings);
+            
+            // 移除调试设置区域
+            if (debugContainer.parentElement) {
+                debugContainer.parentElement.removeChild(debugContainer);
+            }
+        });
+        titleContainer.appendChild(closeButton);
+        
+        debugContainer.appendChild(titleContainer);
+        
+        // 显示方向判断
+        const showDirectionItem = this.createToggleItem(
+            this.i18n.showDirectionInTooltip as string || "Show Direction in Tooltip",
+            this.settings.showDirectionInTooltip,
+            (checked) => {
+                this.settings.showDirectionInTooltip = checked;
+                this.settingsChanged(this.settings);
+            }
+        );
+        debugContainer.appendChild(showDirectionItem);
+        
+        return debugContainer;
     }
     
     /**

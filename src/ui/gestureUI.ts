@@ -111,6 +111,7 @@ export class GestureUI {
      * @param i18n 语言
      * @param hasAssociatedAction 是否有关联操作
      * @param settingsActions 用户设置的手势操作映射
+     * @param showDirectionInTooltip 是否在提示窗口中显示方向
      */
     public updateTooltipElement(
         x: number, 
@@ -119,7 +120,8 @@ export class GestureUI {
         gestureDirection: GestureDirection, 
         i18n: IObject,
         hasAssociatedAction: boolean = true,
-        settingsActions: {[key: string]: string} = {}
+        settingsActions: {[key: string]: string} = {},
+        showDirectionInTooltip: boolean = false
     ): void {
         if (!this.tooltipElement) return;
         
@@ -154,11 +156,12 @@ export class GestureUI {
 
             // 如果没有关联操作，添加无操作标记
             if (actionName && hasAssociatedAction) {
-                // 显示"方向名称: 操作名称"的格式
-                // this.tooltipElement.textContent = `${directionName}: ${actionName}`;
-                
-                // 仅显示"操作名称"
-                this.tooltipElement.textContent = `${actionName}`;
+                // 显示"方向名称: 操作名称"的格式或仅显示"操作名称"
+                if (showDirectionInTooltip) {
+                    this.tooltipElement.textContent = `${directionName}: ${actionName}`;
+                } else {
+                    this.tooltipElement.textContent = `${actionName}`;
+                }
                 this.tooltipElement.style.color = 'white';
             } else {
                 // 无操作时只显示方向名称

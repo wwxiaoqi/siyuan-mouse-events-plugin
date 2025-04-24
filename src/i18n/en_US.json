@@ -29,6 +29,10 @@
   "gesturesDisabled": "Mouse Gestures Disabled",
   "advancedSettings": "Advanced Settings",
   
+  "debugMode": "Debug Mode",
+  "showDirectionInTooltip": "Show Direction in Tooltip",
+  "closeDebugMode": "Close Debug Mode",
+  
   "noAction": "No Action",
   "scrollTop": "Scroll to Top",
   "scrollBottom": "Scroll to Bottom",

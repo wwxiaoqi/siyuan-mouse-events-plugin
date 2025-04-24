@@ -196,6 +196,55 @@ input:checked + .switch-slider:before {
     margin-top: 12px;
 }
 
+/* 调试模式样式 */
+.debug-section {
+    margin-top: 20px;
+    border-radius: 4px;
+    background-color: rgba(var(--b3-theme-primary-rgb), 0.05);
+}
+
+.debug-title-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 13px;
+}
+
+.debug-close-btn {
+    background: none;
+    border: none;
+    color: var(--b3-theme-on-background);
+    font-size: 20px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0 5px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.debug-close-btn:hover {
+    background-color: rgba(var(--b3-theme-primary-rgb), 0.1);
+    color: var(--b3-theme-primary);
+}
+
+/* 旧的调试模式样式 */
+.debug-settings {
+    margin-top: 20px;
+    padding: 15px;
+    border: 1px dashed var(--b3-border-color);
+    border-radius: 4px;
+    background-color: rgba(var(--b3-theme-primary-rgb), 0.05);
+}
+
+.debug-title {
+    margin-bottom: 10px;
+    font-size: 16px;
+    color: var(--b3-theme-primary);
+}
+
 /* 高级设置区域样式 */
 .config-advanced-area {
     margin-top: 32px;
