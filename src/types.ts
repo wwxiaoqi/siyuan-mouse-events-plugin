@@ -24,6 +24,8 @@ export interface GestureSettings {
     hideNoActionTooltip: boolean;
     debugMode: boolean;
     showDirectionInTooltip: boolean;
+    horizontalThreshold?: number; // 水平手势阈值
+    verticalThreshold?: number;   // 垂直手势阈值
     gestureActions: {
         [key: string]: string;
     };

@@ -171,6 +171,66 @@ export class SettingsUI {
         );
         debugContainer.appendChild(showDirectionItem);
         
+        // 水平手势阈值调节
+        const horizontalThresholdContainer = document.createElement('div');
+        horizontalThresholdContainer.className = 'config-item range-item';
+        
+        const horizontalThresholdLabel = document.createElement('label');
+        horizontalThresholdLabel.textContent = this.i18n.horizontalThreshold as string || "Horizontal Gesture Threshold";
+        horizontalThresholdLabel.title = this.i18n.horizontalThresholdTip as string || "Default value: 20px. Lower value makes horizontal gestures easier to trigger.";
+        horizontalThresholdContainer.appendChild(horizontalThresholdLabel);
+        
+        const horizontalThresholdValue = document.createElement('span');
+        horizontalThresholdValue.className = 'range-value';
+        horizontalThresholdValue.textContent = `${this.settings.horizontalThreshold || 20}px`;
+        horizontalThresholdContainer.appendChild(horizontalThresholdValue);
+        
+        const horizontalThresholdInput = document.createElement('input');
+        horizontalThresholdInput.type = 'range';
+        horizontalThresholdInput.min = '5';
+        horizontalThresholdInput.max = '50';
+        horizontalThresholdInput.step = '1';
+        horizontalThresholdInput.value = String(this.settings.horizontalThreshold || 20);
+        horizontalThresholdInput.addEventListener('input', (e) => {
+            const value = parseInt((e.target as HTMLInputElement).value);
+            horizontalThresholdValue.textContent = `${value}px`;
+            this.settings.horizontalThreshold = value;
+            this.settingsChanged(this.settings);
+        });
+        horizontalThresholdContainer.appendChild(horizontalThresholdInput);
+        
+        debugContainer.appendChild(horizontalThresholdContainer);
+        
+        // 垂直手势阈值调节
+        const verticalThresholdContainer = document.createElement('div');
+        verticalThresholdContainer.className = 'config-item range-item';
+        
+        const verticalThresholdLabel = document.createElement('label');
+        verticalThresholdLabel.textContent = this.i18n.verticalThreshold as string || "Vertical Gesture Threshold";
+        verticalThresholdLabel.title = this.i18n.verticalThresholdTip as string || "Default value: 10px. Lower value makes vertical gestures easier to trigger.";
+        verticalThresholdContainer.appendChild(verticalThresholdLabel);
+        
+        const verticalThresholdValue = document.createElement('span');
+        verticalThresholdValue.className = 'range-value';
+        verticalThresholdValue.textContent = `${this.settings.verticalThreshold || 10}px`;
+        verticalThresholdContainer.appendChild(verticalThresholdValue);
+        
+        const verticalThresholdInput = document.createElement('input');
+        verticalThresholdInput.type = 'range';
+        verticalThresholdInput.min = '5';
+        verticalThresholdInput.max = '50';
+        verticalThresholdInput.step = '1';
+        verticalThresholdInput.value = String(this.settings.verticalThreshold || 10);
+        verticalThresholdInput.addEventListener('input', (e) => {
+            const value = parseInt((e.target as HTMLInputElement).value);
+            verticalThresholdValue.textContent = `${value}px`;
+            this.settings.verticalThreshold = value;
+            this.settingsChanged(this.settings);
+        });
+        verticalThresholdContainer.appendChild(verticalThresholdInput);
+        
+        debugContainer.appendChild(verticalThresholdContainer);
+        
         return debugContainer;
     }
     

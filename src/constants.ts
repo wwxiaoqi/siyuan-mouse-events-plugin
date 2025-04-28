@@ -53,6 +53,8 @@ export const DEFAULT_SETTINGS = {
     hideNoActionTooltip: true,
     debugMode: false,
     showDirectionInTooltip: false,
+    horizontalThreshold: CONSTANTS.HORIZONTAL_THRESHOLD,
+    verticalThreshold: CONSTANTS.VERTICAL_THRESHOLD,
     gestureActions: {
         'left': GESTURE_ACTIONS.SWITCH_LEFT,
         'right': GESTURE_ACTIONS.SWITCH_RIGHT,

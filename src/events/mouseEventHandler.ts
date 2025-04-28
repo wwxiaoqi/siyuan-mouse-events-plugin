@@ -33,6 +33,15 @@ export class MouseEventHandler {
      */
     public updateSettings(settings: GestureSettings): void {
         this.settings = settings;
+        
+        // 如果在设置中没有水平和垂直阈值，使用默认值
+        if (this.settings.horizontalThreshold === undefined) {
+            this.settings.horizontalThreshold = CONSTANTS.HORIZONTAL_THRESHOLD;
+        }
+        
+        if (this.settings.verticalThreshold === undefined) {
+            this.settings.verticalThreshold = CONSTANTS.VERTICAL_THRESHOLD;
+        }
     }
 
     /**
@@ -278,12 +287,16 @@ export class MouseEventHandler {
         // 判断是否为主要水平移动
         const isHorizontalDominant = Math.abs(deltaX) > Math.abs(deltaY);
         
+        // 获取当前设置的阈值或使用默认值
+        const horizontalThreshold = this.settings.horizontalThreshold || CONSTANTS.HORIZONTAL_THRESHOLD;
+        const verticalThreshold = this.settings.verticalThreshold || CONSTANTS.VERTICAL_THRESHOLD;
+        
         // 根据主导方向使用不同的阈值
         let minLength;
         if (isHorizontalDominant) {
-            minLength = CONSTANTS.HORIZONTAL_THRESHOLD;
+            minLength = horizontalThreshold;
         } else {
-            minLength = CONSTANTS.VERTICAL_THRESHOLD;
+            minLength = verticalThreshold;
         }
 
         // 如果轨迹总长度太短，认为无效
@@ -541,15 +554,19 @@ export class MouseEventHandler {
         // 判断主要移动方向是水平还是垂直
         const isHorizontalDominant = Math.abs(deltaX) > Math.abs(deltaY);
 
+        // 获取当前设置的阈值或使用默认值
+        const horizontalThreshold = this.settings.horizontalThreshold || CONSTANTS.HORIZONTAL_THRESHOLD;
+        const verticalThreshold = this.settings.verticalThreshold || CONSTANTS.VERTICAL_THRESHOLD;
+
         // 根据主导方向应用相应的阈值
         if (isHorizontalDominant) {
             // 水平方向使用水平阈值
-            if (displacement < CONSTANTS.HORIZONTAL_THRESHOLD) {
+            if (displacement < horizontalThreshold) {
                 return '';
             }
         } else {
             // 垂直方向使用垂直阈值
-            if (displacement < CONSTANTS.VERTICAL_THRESHOLD) {
+            if (displacement < verticalThreshold) {
                 return '';
             }
         }
@@ -557,9 +574,6 @@ export class MouseEventHandler {
         // 计算角度（弧度）
         const angle = Math.atan2(deltaY, deltaX);
         const degrees = angle * (180 / Math.PI);
-        
-        // 使用连续的方向判定，不是离散的区域划分
-        // 这样能更好地处理接近边界的情况
         
         // 将角度规范化到 -180 到 180 度范围内
         let normDegrees = degrees;

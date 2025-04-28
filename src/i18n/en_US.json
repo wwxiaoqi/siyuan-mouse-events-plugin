@@ -32,6 +32,10 @@
   "debugMode": "Debug Mode",
   "showDirectionInTooltip": "Show Direction in Tooltip",
   "closeDebugMode": "Close Debug Mode",
+  "horizontalThreshold": "Horizontal Gesture Threshold (Default value: 20px)",
+  "horizontalThresholdTip": "Default value: 20px. Lower value makes horizontal gestures easier to trigger.",
+  "verticalThreshold": "Vertical Gesture Threshold (Default value: 10px)",
+  "verticalThresholdTip": "Default value: 10px. Lower value makes vertical gestures easier to trigger.",
   
   "noAction": "No Action",
   "scrollTop": "Scroll to Top",

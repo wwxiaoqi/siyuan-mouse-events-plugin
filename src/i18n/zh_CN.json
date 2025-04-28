@@ -32,6 +32,10 @@
   "debugMode": "调试模式",
   "showDirectionInTooltip": "显示方向判断",
   "closeDebugMode": "关闭调试模式",
+  "horizontalThreshold": "水平手势阈值 (默认值: 20像素)",
+  "horizontalThresholdTip": "默认值: 20像素。较低的值使水平手势更容易触发。",
+  "verticalThreshold": "垂直手势阈值 (默认值: 10像素)",
+  "verticalThresholdTip": "默认值: 10像素。较低的值使垂直手势更容易触发。",
   
   "noAction": "无操作",
   "scrollTop": "滚动到顶部",
