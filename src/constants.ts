@@ -4,17 +4,12 @@
 
 // 手势阈值常量
 export const CONSTANTS = {
-    // 滚动阈值，单位像素
-    SCROLL_THRESHOLD: 50,
     
     // 水平方向阈值，单位像素
-    HORIZONTAL_THRESHOLD: 50,
+    HORIZONTAL_THRESHOLD: 20,
     
-    // 最小有效手势长度
-    MIN_GESTURE_LENGTH: 30,
-    
-    // 方向变化阈值，单位毫秒
-    DIRECTION_CHANGE_THRESHOLD: 300
+    // 垂直方向阈值，单位像素
+    VERTICAL_THRESHOLD: 10,
 };
 
 // 手势动作类型

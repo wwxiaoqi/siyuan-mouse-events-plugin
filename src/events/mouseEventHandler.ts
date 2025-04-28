@@ -258,9 +258,11 @@ export class MouseEventHandler {
         let totalLength = 0;
         const startPoint = this.gestureTrack[0];
         const endPoint = this.gestureTrack[this.gestureTrack.length - 1];
+        const deltaX = endPoint.x - startPoint.x;
+        const deltaY = endPoint.y - startPoint.y;
         const directDistance = Math.sqrt(
-            Math.pow(endPoint.x - startPoint.x, 2) + 
-            Math.pow(endPoint.y - startPoint.y, 2)
+            Math.pow(deltaX, 2) + 
+            Math.pow(deltaY, 2)
         );
 
         // 计算总轨迹长度
@@ -273,8 +275,19 @@ export class MouseEventHandler {
         // 计算直线度 - 越接近1表示越直，越接近0表示越弯曲
         const straightness = directDistance / totalLength;
 
+        // 判断是否为主要水平移动
+        const isHorizontalDominant = Math.abs(deltaX) > Math.abs(deltaY);
+        
+        // 根据主导方向使用不同的阈值
+        let minLength;
+        if (isHorizontalDominant) {
+            minLength = CONSTANTS.HORIZONTAL_THRESHOLD;
+        } else {
+            minLength = CONSTANTS.VERTICAL_THRESHOLD;
+        }
+
         // 如果轨迹总长度太短，认为无效
-        if (totalLength < CONSTANTS.MIN_GESTURE_LENGTH) {
+        if (totalLength < minLength) {
             this.isValidGesture = false;
             return;
         }
@@ -405,14 +418,13 @@ export class MouseEventHandler {
         const result: number[] = [];
         if (points.length < 5) return result;
         
-        // 根据轨迹直线度调整角度阈值 - 越曲折，阈值越低
-        // 对于直线度高的轨迹(接近1)需要较大的角度变化才算转折
-        // 对于曲线(直线度低)则允许较小的角度变化
-        const baseAngleThreshold = 30; // 基础角度阈值
-        const angleThreshold = baseAngleThreshold + (60 * straightness); 
+        // 根据轨迹直线度调整角度阈值
+        // 水平和垂直方向使用不同的基础角度阈值
+        const horizontalBaseAngleThreshold = 15; // 水平方向使用更低的角度阈值
+        const verticalBaseAngleThreshold = 20;   // 垂直方向保持较高的角度阈值
         
         let lastInflectionIdx = 0;
-        const minSegmentLength = Math.max(3, Math.floor(points.length * 0.05)); // 最小段长度
+        const minSegmentLength = Math.max(2, Math.floor(points.length * 0.04)); // 减小最小段长度
         
         // 使用滑动窗口检测转折点
         for (let i = 2; i < points.length - 2; i++) {
@@ -436,8 +448,23 @@ export class MouseEventHandler {
             const cosAngle = Math.max(-1, Math.min(1, dot / (prevMag * nextMag)));
             const angle = Math.acos(cosAngle) * (180 / Math.PI);
             
+            // 判断是否为主要水平移动
+            const isPrevHorizontal = Math.abs(prevVectorX) > Math.abs(prevVectorY);
+            const isNextHorizontal = Math.abs(nextVectorX) > Math.abs(nextVectorY);
+            
+            // 根据主要方向选择基础角度阈值
+            let baseAngleThreshold;
+            if (isPrevHorizontal || isNextHorizontal) {
+                baseAngleThreshold = horizontalBaseAngleThreshold;
+            } else {
+                baseAngleThreshold = verticalBaseAngleThreshold;
+            }
+            
+            // 计算最终调整后的角度阈值
+            const adjustedThreshold = baseAngleThreshold + (50 * straightness);
+            
             // 方向变化超过阈值，且与上一个转折点距离足够
-            if (angle > angleThreshold && (i - lastInflectionIdx) >= minSegmentLength) {
+            if (angle > adjustedThreshold && (i - lastInflectionIdx) >= minSegmentLength) {
                 result.push(i);
                 lastInflectionIdx = i;
             }
@@ -511,9 +538,20 @@ export class MouseEventHandler {
         // 计算总位移大小
         const displacement = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
 
-        // 如果位移太小，认为没有方向
-        if (displacement < CONSTANTS.MIN_GESTURE_LENGTH * 0.7) {
-            return '';
+        // 判断主要移动方向是水平还是垂直
+        const isHorizontalDominant = Math.abs(deltaX) > Math.abs(deltaY);
+
+        // 根据主导方向应用相应的阈值
+        if (isHorizontalDominant) {
+            // 水平方向使用水平阈值
+            if (displacement < CONSTANTS.HORIZONTAL_THRESHOLD) {
+                return '';
+            }
+        } else {
+            // 垂直方向使用垂直阈值
+            if (displacement < CONSTANTS.VERTICAL_THRESHOLD) {
+                return '';
+            }
         }
 
         // 计算角度（弧度）
@@ -534,9 +572,9 @@ export class MouseEventHandler {
             return 'left';      // 向左
         } else if (normDegrees >= 22.5 && normDegrees < 67.5) {
             // 对于接近边界的曲线手势，判断哪个分量更明显
-            if (Math.abs(deltaY) > Math.abs(deltaX) * 1.5) {
+            if (Math.abs(deltaY) > Math.abs(deltaX) * 1.2) { // 降低阈值比例
                 return 'up';    // 垂直分量更明显，判为向上
-            } else if (Math.abs(deltaX) > Math.abs(deltaY) * 1.5) {
+            } else if (Math.abs(deltaX) > Math.abs(deltaY) * 1.2) {
                 return 'left';  // 水平分量更明显，判为向左
             } else {
                 return 'up-left';   // 两者差不多，判为左上
@@ -545,9 +583,9 @@ export class MouseEventHandler {
             return 'up';        // 向上
         } else if (normDegrees >= 112.5 && normDegrees < 157.5) {
             // 同理处理接近边界情况
-            if (Math.abs(deltaY) > Math.abs(deltaX) * 1.5) {
+            if (Math.abs(deltaY) > Math.abs(deltaX) * 1.2) {
                 return 'up';    // 垂直分量更明显
-            } else if (Math.abs(deltaX) > Math.abs(deltaY) * 1.5) {
+            } else if (Math.abs(deltaX) > Math.abs(deltaY) * 1.2) {
                 return 'right'; // 水平分量更明显
             } else {
                 return 'up-right';  // 两者差不多
@@ -556,9 +594,9 @@ export class MouseEventHandler {
             return 'right';     // 向右
         } else if (normDegrees >= -157.5 && normDegrees < -112.5) {
             // 同理处理接近边界情况
-            if (Math.abs(deltaY) > Math.abs(deltaX) * 1.5) {
+            if (Math.abs(deltaY) > Math.abs(deltaX) * 1.2) {
                 return 'down';  // 垂直分量更明显
-            } else if (Math.abs(deltaX) > Math.abs(deltaY) * 1.5) {
+            } else if (Math.abs(deltaX) > Math.abs(deltaY) * 1.2) {
                 return 'right'; // 水平分量更明显
             } else {
                 return 'down-right'; // 两者差不多
@@ -567,9 +605,9 @@ export class MouseEventHandler {
             return 'down';      // 向下
         } else if (normDegrees >= -67.5 && normDegrees < -22.5) {
             // 同理处理接近边界情况
-            if (Math.abs(deltaY) > Math.abs(deltaX) * 1.5) {
+            if (Math.abs(deltaY) > Math.abs(deltaX) * 1.2) {
                 return 'down';  // 垂直分量更明显
-            } else if (Math.abs(deltaX) > Math.abs(deltaY) * 1.5) {
+            } else if (Math.abs(deltaX) > Math.abs(deltaY) * 1.2) {
                 return 'left';  // 水平分量更明显
             } else {
                 return 'down-left'; // 两者差不多
