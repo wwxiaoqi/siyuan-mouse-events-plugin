@@ -91,6 +91,19 @@ If you have any questions, suggestions, or feature requests, please:
 
 ## 📄 Update Logs
 
+### v0.1.6
+Added: Added [New Document] menu
+
+Added: Added [Refresh Current Page] menu
+
+Added: Added threshold settings for both directions in debug mode
+
+Modified: Fixed the issue where [Locate Current Document] did not work
+
+Optimized: Optimized gesture recognition threshold
+
+Test: Added force close menu function in debug mode (test)
+
 ### v0.1.5
 Added: Added [Debug Mode] menu (activation method: click [Basic Settings] in the menu 10 times consecutively)
 
