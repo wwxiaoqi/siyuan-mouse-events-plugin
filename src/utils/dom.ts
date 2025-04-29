@@ -152,28 +152,23 @@ export function locateCurrentDocInTree(docId: string | null, i18n: IObject): voi
         return;
     }
 
-    // 在文档树中定位并高亮当前文档
-    const docItem = document.querySelector(`.fileTree__item[data-node-id="${docId}"]`);
-    if (docItem) {
-        // 展开父级文件夹
-        let parent = docItem.parentElement;
-
-        while (parent) {
-            if (parent.classList.contains('fileTree__item')) {
-                // 展开折叠的文件夹
-                const collapseIcon = parent.querySelector('.b3-list-item__arrow--open');
-                if (collapseIcon) {
-                    (collapseIcon as HTMLElement).click();
-                }
-            }
-            parent = parent.parentElement;
-        }
-        
-        // 滚动到视图中并高亮
-        docItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        (docItem as HTMLElement).click();
+    // 查找文件树顶部的"定位打开的文档"按钮并点击
+    const focusButton = document.querySelector('span.block__icon[data-type="focus"]');
+    
+    if (focusButton) {
+        // 点击"定位打开的文档"按钮
+        (focusButton as HTMLElement).click();
     } else {
-        showMessage(i18n["locateCurrentDocInTreeErr2"]);
+        // 如果找不到按钮，尝试通过其他选择器找到
+        const altFocusButton = document.querySelector('.layout-tab-container .block__icons span[aria-label*="定位"]') || 
+                              document.querySelector('.layout-tab-container .block__icons span:nth-child(3)');
+
+        if (altFocusButton) {
+            (altFocusButton as HTMLElement).click();
+        } else {
+            // 如果仍然找不到按钮，显示错误消息
+            showMessage(i18n["locateCurrentDocInTreeErr2"]);
+        }
     }
 }
 
