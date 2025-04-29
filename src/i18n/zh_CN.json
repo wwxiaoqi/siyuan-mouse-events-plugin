@@ -8,6 +8,7 @@
   "lefttooltipText": "切换到左侧标签页",
   "righttooltipText": "切换到右侧标签页",
   "refreshtooltipText": "刷新当前页面",
+  "createNewDocumentTooltipText": "新建文档",
   "locateCurrentDocInTreeErr1": "无法获取当前文档ID",
   "locateCurrentDocInTreeErr2": "无法在文档树中找到当前文档",
   "switchTabLeft": "已经是最左侧页签",
@@ -50,6 +51,7 @@
   "closeAllTabs": "关闭所有标签页",
   "closeOtherTabs": "关闭其他标签页",
   "refresh": "刷新页面",
+  "createNewDocument": "新建文档",
   
   "left": "左",
   "right": "右",

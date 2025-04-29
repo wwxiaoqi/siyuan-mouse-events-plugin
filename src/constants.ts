@@ -25,7 +25,8 @@ export const GESTURE_ACTIONS = {
     'CLOSE_TAB': 'closeTab',
     'CLOSE_ALL_TABS': 'closeAllTabs',
     'CLOSE_OTHER_TABS': 'closeOtherTabs',
-    'REFRESH': 'refresh'
+    'REFRESH': 'refresh',
+    'CREATE_NEW_DOCUMENT': 'createNewDocument'
 };
 
 // 手势方向名称

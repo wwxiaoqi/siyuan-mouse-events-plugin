@@ -7,7 +7,7 @@ import { showMessage, IObject } from "siyuan";
  * 查找当前激活的内容区域
  * @returns 当前激活的内容区域元素或null
  */
-function getActiveContentDiv(): Element | null {
+export function getActiveContentDiv(): Element | null {
     // 获取中心布局容器
     const centerLayout = document.querySelector('.layout__center.fn__flex-1.fn__flex');
     if (!centerLayout) return null;
@@ -374,5 +374,20 @@ export function refreshPage(): void {
             cancelable: true
         });
         document.dispatchEvent(event);
+    }
+}
+
+/**
+ * 在当前活动区域创建新文档
+ */
+export function createNewDocument(): void {
+    const activeContentDiv = getActiveContentDiv();
+    if (!activeContentDiv) return;
+    
+    // 查找新建文档按钮
+    const newDocButton = activeContentDiv.querySelector('.fn__flex > ul.layout-tab-bar > li > span[data-type="new"]') as HTMLElement;
+    
+    if (newDocButton) {
+        newDocButton.click();
     }
 }

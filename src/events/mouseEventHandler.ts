@@ -7,7 +7,7 @@ import { IObject } from "siyuan";
 import { GesturePoint, GestureDirection, GestureSettings } from '../types';
 import { CONSTANTS, GESTURE_ACTIONS } from '../constants';
 import { GestureUI } from '../ui/gestureUI';
-import { handleScrollClick, getCurrentDocId, locateCurrentDocInTree, handleTabSwitch, closeCurrentTab, closeAllTabs, closeOtherTabs, clearTextSelection, hideContextMenu, refreshPage } from '../utils/dom';
+import { handleScrollClick, getCurrentDocId, locateCurrentDocInTree, handleTabSwitch, closeCurrentTab, closeAllTabs, closeOtherTabs, clearTextSelection, hideContextMenu, refreshPage, createNewDocument } from '../utils/dom';
 
 export class MouseEventHandler {
     private i18n: IObject;
@@ -166,6 +166,9 @@ export class MouseEventHandler {
                 break;
             case GESTURE_ACTIONS.REFRESH:
                 refreshPage();
+                break;
+            case GESTURE_ACTIONS.CREATE_NEW_DOCUMENT:
+                createNewDocument();
                 break;
             default:
                 // 未知操作不执行任何动作
