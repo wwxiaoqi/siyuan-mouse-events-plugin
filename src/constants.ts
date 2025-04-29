@@ -24,7 +24,8 @@ export const GESTURE_ACTIONS = {
     'LOCATE_DOC': 'locateDoc',
     'CLOSE_TAB': 'closeTab',
     'CLOSE_ALL_TABS': 'closeAllTabs',
-    'CLOSE_OTHER_TABS': 'closeOtherTabs'
+    'CLOSE_OTHER_TABS': 'closeOtherTabs',
+    'REFRESH': 'refresh'
 };
 
 // 手势方向名称

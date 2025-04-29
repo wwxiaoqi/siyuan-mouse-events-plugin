@@ -354,3 +354,25 @@ export function hideContextMenu(): void {
         }
     }
 }
+
+/**
+ * 刷新当前页面
+ */
+export function refreshPage(): void {
+    const refreshButton = document.querySelector('#commonMenu > div.b3-menu__items > button:nth-child(8)') as HTMLElement;
+    
+    if (refreshButton && refreshButton.querySelector('use[xlink:href="#iconRefresh"]')) {
+        refreshButton.click();
+    } else {
+        // 备选方式：直接触发F5刷新
+        const event = new KeyboardEvent('keydown', {
+            key: 'F5',
+            code: 'F5',
+            keyCode: 116,
+            which: 116,
+            bubbles: true,
+            cancelable: true
+        });
+        document.dispatchEvent(event);
+    }
+}

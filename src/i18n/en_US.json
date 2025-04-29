@@ -7,6 +7,7 @@
   "downtooltipText": "Scroll to Bottom",
   "lefttooltipText": "Switch to Left Tab",
   "righttooltipText": "Switch to Right Tab",
+  "refreshtooltipText": "Refresh Current Page",
   "locateCurrentDocInTreeErr1": "Failed to Get Current Document ID",
   "locateCurrentDocInTreeErr2": "Current Document Not Found in Document Tree",
   "switchTabLeft": "Already the Leftmost Tab",
@@ -48,6 +49,7 @@
   "closeTab": "Close Current Tab",
   "closeAllTabs": "Close All Tabs",
   "closeOtherTabs": "Close Other Tabs",
+  "refresh": "Refresh Page",
   
   "left": "Left",
   "right": "Right",
