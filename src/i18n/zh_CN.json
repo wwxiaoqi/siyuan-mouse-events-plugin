@@ -36,6 +36,8 @@
   "horizontalThresholdTip": "默认值: 20像素。较低的值使水平手势更容易触发。",
   "verticalThreshold": "垂直手势阈值 (默认值: 10像素)",
   "verticalThresholdTip": "默认值: 10像素。较低的值使垂直手势更容易触发。",
+  "clearSelectionAfterGesture": "手势后清除文本选择（测试）",
+  "clearSelectionAfterGestureTip": "手势执行完毕后自动清除文本选择并隐藏右键菜单，持续300毫秒",
   
   "noAction": "无操作",
   "scrollTop": "滚动到顶部",

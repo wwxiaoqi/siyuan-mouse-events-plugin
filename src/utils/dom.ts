@@ -324,3 +324,38 @@ export function closeOtherTabs(): void {
         }, 100);
     }
 }
+
+/**
+ * 清除文本选择
+ * 在鼠标手势操作过程中清除文本选择
+ */
+export function clearTextSelection(): void {
+    // 找到所有带有 protyle-wysiwyg--select 类的元素
+    const selectedElements = document.querySelectorAll(".protyle-wysiwyg--select");
+    
+    // 移除选择类和属性
+    selectedElements.forEach(item => {
+        item.classList.remove("protyle-wysiwyg--select");
+        item.removeAttribute("select-start");
+        item.removeAttribute("select-end");
+    });
+}
+
+/**
+ * 隐藏右键菜单
+ * 在鼠标手势操作过程中隐藏右键菜单
+ */
+export function hideContextMenu(): void {
+    // 查找右键菜单元素
+    const contextMenu = document.querySelector("#commonMenu");
+    
+    if (contextMenu) {
+        // 移除样式属性
+        contextMenu.removeAttribute("style");
+        
+        // 确保添加 fn__none 类以隐藏菜单
+        if (!contextMenu.classList.contains("fn__none")) {
+            contextMenu.classList.add("fn__none");
+        }
+    }
+}

@@ -2,6 +2,8 @@
  * 鼠标手势插件常量定义
  */
 
+import { GestureSettings } from './types';
+
 // 手势阈值常量
 export const CONSTANTS = {
     
@@ -46,7 +48,7 @@ export const GESTURE_DIRECTIONS = {
 };
 
 // 默认设置
-export const DEFAULT_SETTINGS = {
+export const DEFAULT_SETTINGS: GestureSettings = {
     enableGestures: true,
     showGestureTrack: true,
     showGestureTooltip: true,
@@ -55,6 +57,7 @@ export const DEFAULT_SETTINGS = {
     showDirectionInTooltip: false,
     horizontalThreshold: CONSTANTS.HORIZONTAL_THRESHOLD,
     verticalThreshold: CONSTANTS.VERTICAL_THRESHOLD,
+    clearSelectionAfterGesture: false,
     gestureActions: {
         'left': GESTURE_ACTIONS.SWITCH_LEFT,
         'right': GESTURE_ACTIONS.SWITCH_RIGHT,

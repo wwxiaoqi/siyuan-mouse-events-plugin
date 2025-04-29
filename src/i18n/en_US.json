@@ -36,6 +36,8 @@
   "horizontalThresholdTip": "Default value: 20px. Lower value makes horizontal gestures easier to trigger.",
   "verticalThreshold": "Vertical Gesture Threshold (Default value: 10px)",
   "verticalThresholdTip": "Default value: 10px. Lower value makes vertical gestures easier to trigger.",
+  "clearSelectionAfterGesture": "Clear Text Selection After Gesture (Test)",
+  "clearSelectionAfterGestureTip": "Automatically clears any text selection and hides context menus after gesture execution for 300ms",
   
   "noAction": "No Action",
   "scrollTop": "Scroll to Top",

@@ -170,6 +170,18 @@ export class SettingsUI {
             }
         );
         debugContainer.appendChild(showDirectionItem);
+
+        // 手势后清除文本选择
+        const clearSelectionItem = this.createToggleItem(
+            this.i18n.clearSelectionAfterGesture as string || "Clear Text Selection After Gesture",
+            this.settings.clearSelectionAfterGesture || false,
+            (checked) => {
+                this.settings.clearSelectionAfterGesture = checked;
+                this.settingsChanged(this.settings);
+            }
+        );
+        clearSelectionItem.title = this.i18n.clearSelectionAfterGestureTip as string || "Automatically clears any text selection and hides context menus after gesture execution for 300ms";
+        debugContainer.appendChild(clearSelectionItem);
         
         // 水平手势阈值调节
         const horizontalThresholdContainer = document.createElement('div');

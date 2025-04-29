@@ -7,7 +7,7 @@ import { IObject } from "siyuan";
 import { GesturePoint, GestureDirection, GestureSettings } from '../types';
 import { CONSTANTS, GESTURE_ACTIONS } from '../constants';
 import { GestureUI } from '../ui/gestureUI';
-import { handleScrollClick, getCurrentDocId, locateCurrentDocInTree, handleTabSwitch, closeCurrentTab, closeAllTabs, closeOtherTabs } from '../utils/dom';
+import { handleScrollClick, getCurrentDocId, locateCurrentDocInTree, handleTabSwitch, closeCurrentTab, closeAllTabs, closeOtherTabs, clearTextSelection, hideContextMenu } from '../utils/dom';
 
 export class MouseEventHandler {
     private i18n: IObject;
@@ -167,6 +167,21 @@ export class MouseEventHandler {
             default:
                 // 未知操作不执行任何动作
                 break;
+        }
+
+        // 只有当启用清除文本选择功能时才执行
+        if (this.settings.clearSelectionAfterGesture) {
+            // 在手势执行完毕后，循环执行清除文本选择和隐藏右键菜单操作，持续300毫秒
+            const startTime = Date.now();
+            const clearSelectionInterval = setInterval(() => {
+                clearTextSelection();
+                hideContextMenu();
+                
+                // 停止循环
+                if (Date.now() - startTime >= 300) {
+                    clearInterval(clearSelectionInterval);
+                }
+            }, 100); // 每100毫秒执行一次
         }
     }
 

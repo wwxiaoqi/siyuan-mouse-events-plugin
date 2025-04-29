@@ -26,6 +26,7 @@ export interface GestureSettings {
     showDirectionInTooltip: boolean;
     horizontalThreshold?: number; // 水平手势阈值
     verticalThreshold?: number;   // 垂直手势阈值
+    clearSelectionAfterGesture?: boolean; // 手势执行后清除文本选择
     gestureActions: {
         [key: string]: string;
     };
