@@ -48,20 +48,20 @@ export class MouseEventHandler {
      * 注册鼠标事件监听
      */
     public registerEvents(): void {
-        document.addEventListener("mousedown", this.handleMouseDown, false);
-        document.addEventListener("mouseup", this.handleMouseUp, false);
-        document.addEventListener("mousemove", this.handleMouseMove, false);
-        document.addEventListener("auxclick", this.handleMiddleClick, false);
+        document.addEventListener("mousedown", this.handleMouseDown, true);
+        document.addEventListener("mouseup", this.handleMouseUp, true);
+        document.addEventListener("mousemove", this.handleMouseMove, true);
+        document.addEventListener("auxclick", this.handleMiddleClick, true);
     }
 
     /**
      * 注销鼠标事件监听
      */
     public unregisterEvents(): void {
-        document.removeEventListener("mousedown", this.handleMouseDown, false);
-        document.removeEventListener("mouseup", this.handleMouseUp, false);
-        document.removeEventListener("mousemove", this.handleMouseMove, false);
-        document.removeEventListener("auxclick", this.handleMiddleClick, false);
+        document.removeEventListener("mousedown", this.handleMouseDown, true);
+        document.removeEventListener("mouseup", this.handleMouseUp, true);
+        document.removeEventListener("mousemove", this.handleMouseMove, true);
+        document.removeEventListener("auxclick", this.handleMiddleClick, true);
     }
 
     /**

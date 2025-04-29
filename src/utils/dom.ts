@@ -7,7 +7,7 @@ import { showMessage, IObject } from "siyuan";
  * 查找当前激活的内容区域
  * @returns 当前激活的内容区域元素或null
  */
-export function getActiveContentDiv(): Element | null {
+function getActiveContentDiv(): Element | null {
     // 获取中心布局容器
     const centerLayout = document.querySelector('.layout__center.fn__flex-1.fn__flex');
     if (!centerLayout) return null;
