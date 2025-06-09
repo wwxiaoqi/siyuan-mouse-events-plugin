@@ -91,6 +91,12 @@ If you have any questions, suggestions, or feature requests, please:
 
 ## 📄 Update Logs
 
+### v0.1.7
+
+Fix: fixed a problem with gestures not working
+
+Fix: try to fix a pop-up window with chance
+
 ### v0.1.6
 Added: Added [New Document] menu
 
