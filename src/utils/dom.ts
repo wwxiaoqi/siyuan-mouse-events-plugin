@@ -8,14 +8,37 @@ import { showMessage, IObject } from "siyuan";
  * @returns 当前激活的内容区域元素或null
  */
 function getActiveContentDiv(): Element | null {
-    // 获取中心布局容器
-    const centerLayout = document.querySelector('.layout__center.fn__flex-1.fn__flex');
+    // 尝试多种选择器来找到中心布局容器
+    const centerLayout = document.querySelector('.layout__center.fn__flex-1.fn__flex') || 
+                         document.querySelector('.layout__center.fn__flex-column.fn__flex-1');
     if (!centerLayout) return null;
 
-    // 获取分割线两侧的内容区域
-    const contentDivs = centerLayout.querySelectorAll('.fn__flex-1.fn__flex');
+    // 尝试直接找到包含激活窗口的内容区域
+    const activeWnd = document.querySelector('.layout__wnd--active');
+    if (activeWnd) {
+        // 向上查找到内容区域
+        let parent = activeWnd.parentElement;
+        while (parent) {
+            if (parent.classList.contains('fn__flex-1') && parent.classList.contains('fn__flex')) {
+                return parent;
+            }
+            parent = parent.parentElement;
+        }
+    }
 
-    // 查找当前激活的窗口
+    // 如果上面的方法失败，尝试通过激活的标签页查找
+    const activeTab = document.querySelector('.layout-tab-bar .item--focus');
+    if (activeTab) {
+        // 获取标签栏的父元素
+        const tabBarParent = activeTab.closest('.fn__flex');
+        if (tabBarParent) {
+            // 标签栏的父元素通常是内容区域的直接子元素
+            return tabBarParent.parentElement;
+        }
+    }
+
+    // 如果以上方法都失败，回退到原来的方法
+    const contentDivs = centerLayout.querySelectorAll('.fn__flex-1.fn__flex');
     let activeContentDiv: Element | null = null;
     contentDivs.forEach(div => {
         if (div.querySelector('.layout__wnd--active')) {
