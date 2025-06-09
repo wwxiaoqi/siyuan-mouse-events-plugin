@@ -17,6 +17,7 @@ export class MouseEventHandler {
     private gestureTrack: GesturePoint[] = [];
     private isValidGesture: boolean = false;
     private gestureDirection: GestureDirection = '';
+    private hasTriggeredClick: boolean = false;
 
     // UI管理器
     private gestureUI: GestureUI;
@@ -80,6 +81,7 @@ export class MouseEventHandler {
             this.gestureTrack = [{ x: event.clientX, y: event.clientY }];
             this.isValidGesture = false;
             this.gestureDirection = '';
+            this.hasTriggeredClick = false;
 
             // 创建轨迹元素
             if (this.settings.showGestureTrack) {
@@ -128,6 +130,7 @@ export class MouseEventHandler {
 
             this.rightMouseDown = false;
             this.gestureTrack = [];
+            this.hasTriggeredClick = false;
         }
     }
 
@@ -189,6 +192,25 @@ export class MouseEventHandler {
                 }
             }, 100); // 每100毫秒执行一次
         }
+
+        // 手势动作执行完毕后触发一次点击事件，进一步防止右键菜单弹出
+        setTimeout(() => {
+            // 创建点击事件
+            const clickEvent = new MouseEvent('click', {
+                bubbles: true,
+                cancelable: true,
+                view: window,
+                button: 0,
+                buttons: 1
+            });
+            
+            // 在文档上触发点击事件
+            document.dispatchEvent(clickEvent);
+            
+            // 额外尝试在body上触发
+            document.body.dispatchEvent(clickEvent);
+
+        }, 10); // 短暂延迟确保在动作执行后触发
     }
 
     /**
@@ -206,6 +228,29 @@ export class MouseEventHandler {
             return;
         }
 
+        if (!this.hasTriggeredClick) {
+            // https://github.com/wwxiaoqi/siyuan-mouse-events-plugin/issues/3
+            // 在手势开始时触发一次点击事件，防止右键菜单弹出
+            const clickEvent = new MouseEvent('click', {
+                bubbles: true,    // 允许事件冒泡
+                cancelable: true, // 允许取消事件
+                view: window,     // 关联的window对象
+                button: 0,        // 0表示左键
+                buttons: 1,       // 表示左键被按下
+                clientX: event.clientX, // 传递鼠标位置
+                clientY: event.clientY,
+                screenX: event.screenX,
+                screenY: event.screenY
+            });
+            
+            // 直接在事件发生的位置触发点击事件
+            document.elementFromPoint(event.clientX, event.clientY)?.dispatchEvent(clickEvent);
+            // 备用方案：同时在document上也触发一次
+            document.dispatchEvent(clickEvent);
+            
+            this.hasTriggeredClick = true;
+        }
+        
         // 记录轨迹点
         this.gestureTrack.push({ x: event.clientX, y: event.clientY });
 
